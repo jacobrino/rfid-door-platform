@@ -1,12 +1,14 @@
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
+from typing import Literal
 
+GenderType = Literal["Homme", "Femme"]
 
 class AuthorizedUserBase(BaseModel):
     first_name: str
     last_name: str
-    gender: str | None = None
+    gender: GenderType | None = None
     phone: str | None = None
     email: EmailStr | None = None
     reference_code: str | None = None

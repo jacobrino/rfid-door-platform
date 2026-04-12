@@ -115,6 +115,38 @@ def get_authorized_user_by_reference_code(
     )
 
 
+def get_authorized_user_by_email(
+    db: Session,
+    email: str,
+    exclude_user_id: int | None = None,
+) -> AuthorizedUser | None:
+    query = db.query(AuthorizedUser).filter(
+        AuthorizedUser.email == email,
+        AuthorizedUser.deleted_at.is_(None),
+    )
+
+    if exclude_user_id is not None:
+        query = query.filter(AuthorizedUser.id != exclude_user_id)
+
+    return query.first()
+
+
+def get_authorized_user_by_phone(
+    db: Session,
+    phone: str,
+    exclude_user_id: int | None = None,
+) -> AuthorizedUser | None:
+    query = db.query(AuthorizedUser).filter(
+        AuthorizedUser.phone == phone,
+        AuthorizedUser.deleted_at.is_(None),
+    )
+
+    if exclude_user_id is not None:
+        query = query.filter(AuthorizedUser.id != exclude_user_id)
+
+    return query.first()
+
+
 def create_authorized_user(
     db: Session,
     payload: AuthorizedUserCreate,
@@ -167,6 +199,38 @@ def reference_code_exists(
 ) -> bool:
     query = db.query(AuthorizedUser).filter(
         AuthorizedUser.reference_code == reference_code,
+        AuthorizedUser.deleted_at.is_(None),
+    )
+
+    if exclude_user_id is not None:
+        query = query.filter(AuthorizedUser.id != exclude_user_id)
+
+    return db.query(query.exists()).scalar()
+
+
+def email_exists(
+    db: Session,
+    email: str,
+    exclude_user_id: int | None = None,
+) -> bool:
+    query = db.query(AuthorizedUser).filter(
+        AuthorizedUser.email == email,
+        AuthorizedUser.deleted_at.is_(None),
+    )
+
+    if exclude_user_id is not None:
+        query = query.filter(AuthorizedUser.id != exclude_user_id)
+
+    return db.query(query.exists()).scalar()
+
+
+def phone_exists(
+    db: Session,
+    phone: str,
+    exclude_user_id: int | None = None,
+) -> bool:
+    query = db.query(AuthorizedUser).filter(
+        AuthorizedUser.phone == phone,
         AuthorizedUser.deleted_at.is_(None),
     )
 

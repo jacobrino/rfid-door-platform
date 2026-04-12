@@ -95,6 +95,9 @@ def authorized_users_create_page(
     request: Request,
     current_user: StaffUser = Depends(require_admin),
 ):
+    now = datetime.now()
+    request.state.now = now
+
     return templates.TemplateResponse(
         request=request,
         name="authorized_users/create.html",
