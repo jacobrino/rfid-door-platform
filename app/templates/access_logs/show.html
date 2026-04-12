@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Détail log d’accès{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Log d’accès #{{ log.id }}</h2>
+        <p class="page-subtitle">Détail complet d’un événement de contrôle d’accès.</p>
+    </div>
+    <div>
+        <a href="/access-logs" class="btn btn-outline-secondary">Retour</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <h6 class="text-muted">Scan</h6>
+                <p class="mb-2"><strong>UID scanné :</strong> {{ log.uid_scanned }}</p>
+                <p class="mb-2"><strong>Date/heure :</strong> {{ log.scanned_at.strftime("%d/%m/%Y %H:%M:%S") if log.scanned_at else "—" }}</p>
+                <p class="mb-2"><strong>Raison :</strong> {{ log.reason or "—" }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted">Décision</h6>
+                <p class="mb-2"><strong>Statut :</strong> {{ log.access_status }}</p>
+                <p class="mb-2"><strong>Direction :</strong> {{ log.access_direction or "—" }}</p>
+                <p class="mb-2"><strong>Porte ouverte :</strong> {{ "Oui" if log.door_opened else "Non" }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted">Appareil</h6>
+                {% if log.device %}
+                <p class="mb-2"><strong>Nom :</strong> {{ log.device.device_name }}</p>
+                <p class="mb-2"><strong>Code :</strong> {{ log.device.device_code }}</p>
+                <p class="mb-2"><strong>Localisation :</strong> {{ log.device.location or "—" }}</p>
+                {% else %}
+                <p class="mb-0 text-muted">Aucun appareil lié.</p>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted">Utilisateur</h6>
+                {% if log.authorized_user %}
+                <p class="mb-2"><strong>Nom :</strong> {{ log.authorized_user.first_name }} {{ log.authorized_user.last_name }}</p>
+                <p class="mb-2"><strong>Référence :</strong> {{ log.authorized_user.reference_code or "—" }}</p>
+                {% else %}
+                <p class="mb-0 text-muted">Aucun utilisateur lié.</p>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted">Carte RFID</h6>
+                {% if log.rfid_card %}
+                <p class="mb-2"><strong>UID :</strong> {{ log.rfid_card.uid }}</p>
+                <p class="mb-2"><strong>Libellé :</strong> {{ log.rfid_card.card_label or "—" }}</p>
+                <p class="mb-2"><strong>Statut carte :</strong> {{ log.rfid_card.status }}</p>
+                {% else %}
+                <p class="mb-0 text-muted">Aucune carte liée.</p>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted">Affectation</h6>
+                {% if log.assignment %}
+                <p class="mb-2"><strong>ID affectation :</strong> {{ log.assignment.id }}</p>
+                <p class="mb-2"><strong>Statut :</strong> {{ log.assignment.status }}</p>
+                <p class="mb-2"><strong>Attribuée le :</strong> {{ log.assignment.assigned_at.strftime("%d/%m/%Y %H:%M:%S") if log.assignment.assigned_at else "—" }}</p>
+                {% else %}
+                <p class="mb-0 text-muted">Aucune affectation liée.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
