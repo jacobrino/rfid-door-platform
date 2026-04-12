@@ -1,27 +1,33 @@
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from sqlalchemy import not_
 
 from app.models.rfid_card import RfidCard
 from app.schemas.rfid_card import RfidCardCreate, RfidCardUpdate
 
+from app.models.rfid_assignment import RfidAssignment
 
-def get_rfid_cards(
-    db: Session,
-    search: str | None = None,
-) -> list[RfidCard]:
-    query = db.query(RfidCard)
 
-    if search:
-        search_term = f"%{search.strip()}%"
-        query = query.filter(
-            or_(
-                RfidCard.uid.ilike(search_term),
-                RfidCard.card_label.ilike(search_term),
-                RfidCard.status.ilike(search_term),
-            )
+
+
+def get_assignable_rfid_cards(db: Session) -> list[RfidCard]:
+    return (
+        db.query(RfidCard)
+        .filter(
+            RfidCard.status.notin_(["blocked", "lost", "damaged", "inactive"])
         )
-
-    return query.order_by(RfidCard.id.desc()).all()
+        .filter(
+            ~db.query(RfidAssignment)
+            .filter(
+                RfidAssignment.rfid_card_id == RfidCard.id,
+                RfidAssignment.status == "active",
+                RfidAssignment.unassigned_at.is_(None),
+            )
+            .exists()
+        )
+        .order_by(RfidCard.uid.asc(), RfidCard.id.asc())
+        .all()
+    )
 
 
 def get_rfid_cards_paginated(
@@ -58,6 +64,7 @@ def get_rfid_cards_paginated(
     )
 
     return cards, total
+
 
 
 def get_rfid_card_by_id(
