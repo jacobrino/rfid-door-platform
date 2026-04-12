@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Détail affectation RFID{% endblock %}
+
+{% block page_content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="h3 mb-1">Affectation #{{ assignment.id }}</h1>
+            <p class="text-muted mb-0">Détail d’une affectation RFID</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="/assignments" class="btn btn-outline-secondary">Retour</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Carte RFID</h6>
+                    {% if assignment.rfid_card %}
+                    <p class="mb-2"><strong>UID :</strong> {{ assignment.rfid_card.uid }}</p>
+                    <p class="mb-2"><strong>Libellé :</strong> {{ assignment.rfid_card.card_label or "—" }}</p>
+                    <p class="mb-2"><strong>Statut carte :</strong> {{ assignment.rfid_card.status }}</p>
+                    {% else %}
+                    <p class="mb-0 text-muted">Carte introuvable.</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted">Utilisateur autorisé</h6>
+                    {% if assignment.authorized_user %}
+                    <p class="mb-2">
+                        <strong>Nom :</strong>
+                        {{ assignment.authorized_user.first_name }} {{ assignment.authorized_user.last_name }}
+                    </p>
+                    <p class="mb-2"><strong>Référence :</strong> {{ assignment.authorized_user.reference_code or "—" }}</p>
+                    <p class="mb-2"><strong>Statut utilisateur :</strong>
+                        {% if assignment.authorized_user.is_active %}
+                        <span class="badge text-bg-success">Actif</span>
+                        {% else %}
+                        <span class="badge text-bg-secondary">Inactif</span>
+                        {% endif %}
+                    </p>
+                    {% else %}
+                    <p class="mb-0 text-muted">Utilisateur introuvable.</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted">Informations d’affectation</h6>
+                    <p class="mb-2"><strong>Attribuée le :</strong> {{ assignment.assigned_at.strftime("%d/%m/%Y %H:%M") if assignment.assigned_at else "—" }}</p>
+                    <p class="mb-2"><strong>Expire le :</strong> {{ assignment.expired_at.strftime("%d/%m/%Y %H:%M") if assignment.expired_at else "—" }}</p>
+                    <p class="mb-2"><strong>Retirée le :</strong> {{ assignment.unassigned_at.strftime("%d/%m/%Y %H:%M") if assignment.unassigned_at else "—" }}</p>
+                    <p class="mb-2">
+                        <strong>Statut :</strong>
+                        {% if assignment.status == "active" %}
+                        <span class="badge text-bg-success">active</span>
+                        {% elif assignment.status == "expired" %}
+                        <span class="badge text-bg-warning">expired</span>
+                        {% elif assignment.status == "unassigned" %}
+                        <span class="badge text-bg-secondary">unassigned</span>
+                        {% elif assignment.status == "revoked" %}
+                        <span class="badge text-bg-danger">revoked</span>
+                        {% else %}
+                        <span class="badge text-bg-dark">{{ assignment.status }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted">Traçabilité</h6>
+                    <p class="mb-2">
+                        <strong>Attribuée par :</strong>
+                        {% if assignment.assigned_by_staff %}
+                        {{ assignment.assigned_by_staff.first_name }} {{ assignment.assigned_by_staff.last_name }}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </p>
+                    <p class="mb-2"><strong>Créée le :</strong> {{ assignment.created_at.strftime("%d/%m/%Y %H:%M") }}</p>
+                    <p class="mb-2"><strong>Mise à jour le :</strong> {{ assignment.updated_at.strftime("%d/%m/%Y %H:%M") }}</p>
+                </div>
+
+                <div class="col-12">
+                    <h6 class="text-muted">Notes</h6>
+                    <div class="border rounded p-3 bg-light">
+                        {{ assignment.notes or "Aucune note." }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.role and current_user.role.name == "admin" and assignment.status == "active" %}
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">Retirer l’affectation</h5>
+                    <form method="post" action="/assignments/{{ assignment.id }}/unassign">
+                        <div class="mb-3">
+                            <label for="unassign_notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="unassign_notes" name="notes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-secondary w-100">
+                            Retirer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">Révoquer l’affectation</h5>
+                    <form method="post" action="/assignments/{{ assignment.id }}/revoke">
+                        <div class="mb-3">
+                            <label for="revoke_notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="revoke_notes" name="notes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            Révoquer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">Marquer comme expirée</h5>
+                    <form method="post" action="/assignments/{{ assignment.id }}/expire">
+                        <div class="mb-3">
+                            <label for="expire_notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="expire_notes" name="notes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-warning w-100">
+                            Expirer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
