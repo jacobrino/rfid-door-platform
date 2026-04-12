@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Détail carte RFID{% endblock %}
+
+{% block page_content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ card.uid }}</h1>
+            <p class="text-muted mb-0">Détail d’une carte RFID</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            {% if current_user.role and current_user.role.name == "admin" %}
+            <a href="/rfid-cards/{{ card.id }}/edit" class="btn btn-primary">Modifier</a>
+            {% endif %}
+            <a href="/rfid-cards" class="btn btn-outline-secondary">Retour</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Informations générales</h6>
+                    <p class="mb-2"><strong>UID :</strong> {{ card.uid }}</p>
+                    <p class="mb-2"><strong>Libellé :</strong> {{ card.card_label or "—" }}</p>
+                    <p class="mb-2">
+                        <strong>Statut :</strong>
+                        {% if card.status == "available" %}
+                        <span class="badge text-bg-success">available</span>
+                        {% elif card.status == "assigned" %}
+                        <span class="badge text-bg-primary">assigned</span>
+                        {% elif card.status == "lost" %}
+                        <span class="badge text-bg-warning">lost</span>
+                        {% elif card.status == "blocked" %}
+                        <span class="badge text-bg-danger">blocked</span>
+                        {% elif card.status == "damaged" %}
+                        <span class="badge text-bg-dark">damaged</span>
+                        {% else %}
+                        <span class="badge text-bg-secondary">{{ card.status }}</span>
+                        {% endif %}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Date d’émission :</strong>
+                        {{ card.issued_at.strftime("%d/%m/%Y %H:%M") if card.issued_at else "—" }}
+                    </p>
+                </div>
+
+                <div class="col-12">
+                    <h6 class="text-muted">Notes</h6>
+                    <div class="border rounded p-3 bg-light">
+                        {{ card.notes or "Aucune note." }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Créée le : {{ card.created_at.strftime("%d/%m/%Y %H:%M") }}
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        Mise à jour le : {{ card.updated_at.strftime("%d/%m/%Y %H:%M") }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier une carte RFID{% endblock %}
+
+{% block page_content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Modifier une carte RFID</h1>
+        <p class="text-muted mb-0">
+            Mise à jour de la carte {{ card.uid }}
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="post" action="/rfid-cards/{{ card.id }}/edit" class="row g-3">
+                <div class="col-md-6">
+                    <label for="uid" class="form-label">UID</label>
+                    <input type="text" class="form-control" id="uid" name="uid"
+                           value="{{ form_data.get('uid', '') }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="card_label" class="form-label">Libellé</label>
+                    <input type="text" class="form-control" id="card_label" name="card_label"
+                           value="{{ form_data.get('card_label', '') }}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Statut</label>
+                    <select class="form-select" id="status" name="status" required>
+                        {% for item in statuses %}
+                        <option value="{{ item }}" {% if form_data.get('status') == item %}selected{% endif %}>
+                            {{ item }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="issued_at" class="form-label">Date d’émission</label>
+                    <input type="datetime-local" class="form-control" id="issued_at" name="issued_at"
+                           value="{{ form_data.get('issued_at', '') }}">
+                </div>
+
+                <div class="col-12">
+                    <label for="notes" class="form-label">Notes</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="4">{{ form_data.get('notes', '') }}</textarea>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    <a href="/rfid-cards/{{ card.id }}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
