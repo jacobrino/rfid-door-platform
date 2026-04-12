@@ -48,12 +48,15 @@ def seed_assignments(db: Session, total: int = 20) -> None:
         elif status == "expired":
             expired_at = now - timedelta(days=1 + i)
             unassigned_at = None
+            card.status = "available"
         elif status == "unassigned":
             expired_at = None
             unassigned_at = now - timedelta(days=2 + i)
-        else:
+            card.status = "available"
+        else:  # revoked
             expired_at = None
             unassigned_at = now - timedelta(days=3 + i)
+            card.status = "available"
 
         exists = (
             db.query(RfidAssignment)
