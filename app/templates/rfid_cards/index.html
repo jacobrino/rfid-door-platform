@@ -83,7 +83,6 @@
             <table class="table table-modern align-middle">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>UID</th>
                         <th>Libellé</th>
                         <th>Statut</th>
@@ -94,7 +93,6 @@
                 <tbody>
                     {% for card in cards %}
                     <tr>
-                        <td>{{ card.id }}</td>
                         <td class="fw-semibold">{{ card.uid }}</td>
                         <td>{{ card.card_label or "—" }}</td>
                         <td>

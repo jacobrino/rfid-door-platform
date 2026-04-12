@@ -16,16 +16,14 @@
 {% if is_logged_in %}
 <div class="app-shell">
     {% include "partials/sidebar.html" %}
-
     <div class="app-main">
         {% include "partials/navbar.html" %}
-
-        <main class="app-content">
-            {% include "partials/alerts.html" %}
-{% else %}
-        <main class="guest-shell">
 {% endif %}
 
+        <main class="{% if is_logged_in %}app-content{% else %}guest-content{% endif %}">
+            {% if is_logged_in %}
+                {% include "partials/alerts.html" %}
+            {% endif %}
             {% block page_content %}{% endblock %}
         </main>
 

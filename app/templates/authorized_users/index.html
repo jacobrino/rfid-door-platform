@@ -95,10 +95,9 @@
             <table class="table table-modern align-middle">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nom complet</th>
-                        <th>Contact</th>
                         <th>Référence</th>
+                        <th>Contact</th>
                         <th>Validité</th>
                         <th>Statut</th>
                         <th class="text-end">Actions</th>
@@ -107,13 +106,13 @@
                 <tbody>
                     {% for user in users %}
                     <tr>
-                        <td>{{ user.id }}</td>
                         <td>
                             <div class="fw-semibold">{{ user.first_name }} {{ user.last_name }}</div>
                             {% if user.gender %}
                             <small class="text-muted">{{ user.gender }}</small>
                             {% endif %}
                         </td>
+                        <td>{{ user.reference_code or "—" }}</td>
                         <td>
                             {% if user.email %}
                             <div>{{ user.email }}</div>
@@ -125,7 +124,6 @@
                             <span class="text-muted">—</span>
                             {% endif %}
                         </td>
-                        <td>{{ user.reference_code or "—" }}</td>
                         <td>
                             {% if user.valid_from or user.valid_until %}
                                 <div>

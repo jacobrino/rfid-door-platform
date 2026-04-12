@@ -135,7 +135,6 @@
             <table class="table table-modern align-middle">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Date/heure</th>
                         <th>UID</th>
                         <th>Appareil</th>
@@ -149,7 +148,6 @@
                 <tbody>
                     {% for log in logs %}
                     <tr>
-                        <td>{{ log.id }}</td>
                         <td>{{ log.scanned_at.strftime("%d/%m/%Y %H:%M:%S") if log.scanned_at else "—" }}</td>
                         <td>
                             <span class="fw-semibold">{{ log.uid_scanned }}</span>
