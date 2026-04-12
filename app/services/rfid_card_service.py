@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.crud.rfid_card import (
@@ -14,6 +15,19 @@ class RfidCardServiceError(Exception):
     pass
 
 
+def _handle_rfid_card_integrity_error(db: Session, exc: IntegrityError) -> None:
+    db.rollback()
+
+    error_text = str(exc.orig).lower()
+
+    if "uid" in error_text or "duplicate entry" in error_text:
+        raise RfidCardServiceError("Cet UID existe déjà.")
+
+    raise RfidCardServiceError(
+        "Impossible d’enregistrer cette carte RFID à cause d’une contrainte d’unicité."
+    )
+
+
 def create_rfid_card_service(
     db: Session,
     payload: RfidCardCreate,
@@ -21,7 +35,10 @@ def create_rfid_card_service(
     if uid_exists(db, payload.uid):
         raise RfidCardServiceError("Cet UID existe déjà.")
 
-    return create_rfid_card(db, payload)
+    try:
+        return create_rfid_card(db, payload)
+    except IntegrityError as exc:
+        _handle_rfid_card_integrity_error(db, exc)
 
 
 def update_rfid_card_service(
@@ -29,12 +46,15 @@ def update_rfid_card_service(
     rfid_card_id: int,
     payload: RfidCardUpdate,
 ) -> RfidCard:
-    rfid_card = get_rfid_card_by_id(db, rfid_card_id)
+    card = get_rfid_card_by_id(db, rfid_card_id)
 
-    if not rfid_card:
+    if not card:
         raise RfidCardServiceError("Carte RFID introuvable.")
 
-    if uid_exists(db, payload.uid, exclude_card_id=rfid_card.id):
+    if uid_exists(db, payload.uid, exclude_card_id=card.id):
         raise RfidCardServiceError("Cet UID existe déjà.")
 
-    return update_rfid_card(db, rfid_card, payload)
+    try:
+        return update_rfid_card(db, card, payload)
+    except IntegrityError as exc:
+        _handle_rfid_card_integrity_error(db, exc)
