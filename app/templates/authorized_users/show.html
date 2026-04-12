@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Détail utilisateur autorisé{% endblock %}
+
+{% block page_content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ user.first_name }} {{ user.last_name }}</h1>
+            <p class="text-muted mb-0">Détail d’un utilisateur autorisé</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            {% if current_user.role and current_user.role.name == "admin" %}
+            <a href="/authorized-users/{{ user.id }}/edit" class="btn btn-primary">Modifier</a>
+            <form method="post" action="/authorized-users/{{ user.id }}/delete"
+                  onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                <button type="submit" class="btn btn-danger">Supprimer</button>
+            </form>
+            {% endif %}
+            <a href="/authorized-users" class="btn btn-outline-secondary">Retour</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Informations personnelles</h6>
+                    <p class="mb-2"><strong>Prénom :</strong> {{ user.first_name }}</p>
+                    <p class="mb-2"><strong>Nom :</strong> {{ user.last_name }}</p>
+                    <p class="mb-2"><strong>Genre :</strong> {{ user.gender or "—" }}</p>
+                    <p class="mb-2"><strong>Téléphone :</strong> {{ user.phone or "—" }}</p>
+                    <p class="mb-2"><strong>E-mail :</strong> {{ user.email or "—" }}</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted">Accès et statut</h6>
+                    <p class="mb-2"><strong>Code de référence :</strong> {{ user.reference_code or "—" }}</p>
+                    <p class="mb-2">
+                        <strong>Statut :</strong>
+                        {% if user.is_active %}
+                        <span class="badge text-bg-success">Actif</span>
+                        {% else %}
+                        <span class="badge text-bg-secondary">Inactif</span>
+                        {% endif %}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Valide à partir de :</strong>
+                        {{ user.valid_from.strftime("%d/%m/%Y %H:%M") if user.valid_from else "—" }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Valide jusqu’à :</strong>
+                        {{ user.valid_until.strftime("%d/%m/%Y %H:%M") if user.valid_until else "—" }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Supprimé le :</strong>
+                        {{ user.deleted_at.strftime("%d/%m/%Y %H:%M") if user.deleted_at else "Non" }}
+                    </p>
+                </div>
+
+                <div class="col-12">
+                    <h6 class="text-muted">Notes</h6>
+                    <div class="border rounded p-3 bg-light">
+                        {{ user.notes or "Aucune note." }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Créé le : {{ user.created_at.strftime("%d/%m/%Y %H:%M") }}
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        Mis à jour le : {{ user.updated_at.strftime("%d/%m/%Y %H:%M") }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
