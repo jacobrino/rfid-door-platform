@@ -1,4 +1,4 @@
-<aside class="sidebar">
+<aside class="sidebar d-none d-lg-flex">
     <div class="sidebar-brand">
         <div class="sidebar-logo">RFID</div>
         <div>
@@ -33,3 +33,39 @@
         </a>
     </nav>
 </aside>
+
+<div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="mobileSidebarLabel">RFID Door Platform</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <div class="mobile-sidebar">
+            <nav class="sidebar-nav p-3">
+                <a href="/dashboard" class="sidebar-link {% if request.url.path == '/dashboard' %}active{% endif %}">
+                    Dashboard
+                </a>
+
+                <a href="/authorized-users" class="sidebar-link {% if request.url.path.startswith('/authorized-users') %}active{% endif %}">
+                    Utilisateurs autorisés
+                </a>
+
+                <a href="/rfid-cards" class="sidebar-link {% if request.url.path.startswith('/rfid-cards') %}active{% endif %}">
+                    Cartes RFID
+                </a>
+
+                <a href="/assignments" class="sidebar-link {% if request.url.path.startswith('/assignments') %}active{% endif %}">
+                    Affectations
+                </a>
+
+                <a href="/devices" class="sidebar-link {% if request.url.path.startswith('/devices') %}active{% endif %}">
+                    Appareils
+                </a>
+
+                <a href="/access-logs" class="sidebar-link {% if request.url.path.startswith('/access-logs') %}active{% endif %}">
+                    Historique d’accès
+                </a>
+            </nav>
+        </div>
+    </div>
+</div>

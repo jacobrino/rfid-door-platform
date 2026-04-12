@@ -3,10 +3,10 @@
 {% block title %}Connexion{% endblock %}
 
 {% block page_content %}
-<div class="login-page d-flex align-items-center justify-content-center min-vh-100">
+<div class="login-page">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-7 col-sm-10">
+        <div class="row justify-content-center align-items-center min-vh-100 py-4">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-5">
                 <div class="card auth-card border-0">
                     <div class="card-body p-4 p-md-5">
                         <div class="text-center mb-4">
@@ -16,14 +16,6 @@
                                 Accédez à la plateforme de contrôle d’accès
                             </p>
                         </div>
-
-
-                        {% if success %}
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ success }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                        {% endif %}
 
                         <form method="post" action="/login" novalidate>
                             <div class="mb-3">
