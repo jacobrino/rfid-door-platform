@@ -16,7 +16,7 @@ from app.crud.rfid_assignment import (
     get_staff_users_for_assignment_filter,
 )
 from app.crud.authorized_user import get_authorized_users
-from app.crud.rfid_card import get_rfid_cards
+from app.crud.rfid_card import get_assignable_rfid_cards
 from app.models.staff_user import StaffUser
 from app.schemas.rfid_assignment import RfidAssignmentCreate
 from app.services.rfid_assignment_service import (
@@ -124,8 +124,11 @@ def assignments_create_page(
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_admin),
 ):
-    cards = get_rfid_cards(db)
+    cards = get_assignable_rfid_cards(db)
     users = get_authorized_users(db)
+
+    now = datetime.now()
+    request.state.now = now
 
     return templates.TemplateResponse(
         request=request,
@@ -155,7 +158,7 @@ def assignments_store(
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_admin),
 ):
-    cards = get_rfid_cards(db)
+    cards = get_assignable_rfid_cards(db)
     users = get_authorized_users(db)
 
     form_data = {
