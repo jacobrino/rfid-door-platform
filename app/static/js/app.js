@@ -1,0 +1,1 @@
+console.log("RFID Door Platform loaded.");
