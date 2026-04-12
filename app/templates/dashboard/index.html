@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Dashboard</h2>
+        <p class="page-subtitle">
+            Vue d’ensemble rapide et accès aux actions essentielles.
+        </p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="card metric-card">
+            <div class="card-body">
+                <div class="metric-label">Utilisateurs autorisés</div>
+                <div class="metric-value">Module prêt</div>
+                <a href="/authorized-users" class="btn btn-outline-primary btn-sm mt-3">Ouvrir</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card metric-card">
+            <div class="card-body">
+                <div class="metric-label">Cartes RFID</div>
+                <div class="metric-value">Module prêt</div>
+                <a href="/rfid-cards" class="btn btn-outline-primary btn-sm mt-3">Ouvrir</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card metric-card">
+            <div class="card-body">
+                <div class="metric-label">Affectations</div>
+                <div class="metric-value">Module prêt</div>
+                <a href="/assignments" class="btn btn-outline-primary btn-sm mt-3">Ouvrir</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card metric-card">
+            <div class="card-body">
+                <div class="metric-label">Appareils</div>
+                <div class="metric-value">Module prêt</div>
+                <a href="/devices" class="btn btn-outline-primary btn-sm mt-3">Ouvrir</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% if request.session.get('role_name') == 'admin' %}
+    <div class="col-lg-6">
+        <div class="card quick-action-card">
+            <div class="card-body">
+                <h5 class="card-title">Actions rapides</h5>
+                <p class="text-muted">Les opérations les plus fréquentes du back-office.</p>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-md-6">
+                        <a href="/authorized-users/create" class="btn btn-primary">Créer un utilisateur</a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/rfid-cards/create" class="btn btn-primary">Ajouter une carte</a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/assignments/create" class="btn btn-primary">Créer une affectation</a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/devices/create" class="btn btn-primary">Ajouter un appareil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Parcours métier</h5>
+                <p class="text-muted mb-3">
+                    Ordre recommandé pour utiliser l’application.
+                </p>
+
+                <ol class="mb-0">
+                    <li>Créer un utilisateur autorisé</li>
+                    <li>Ajouter une carte RFID</li>
+                    <li>Créer une affectation</li>
+                    <li>Créer ou configurer un appareil ESP32</li>
+                    <li>Tester l’API d’accès</li>
+                    <li>Consulter l’historique d’accès</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

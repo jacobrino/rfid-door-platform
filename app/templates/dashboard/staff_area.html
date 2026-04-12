@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Zone Staff{% endblock %}
+
+{% block page_content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Zone Staff</h1>
+            <p class="text-muted mb-0">
+                Bienvenue, {{ user_name }} — Rôle : {{ user_role }}
+            </p>
+        </div>
+        <a href="/logout" class="btn btn-outline-danger">Déconnexion</a>
+    </div>
+
+    <div class="alert alert-info">
+        Cette page est accessible aux administrateurs et aux agents.
+    </div>
+
+    <a href="/dashboard" class="btn btn-primary">Retour au dashboard</a>
+</div>
+{% endblock %}
