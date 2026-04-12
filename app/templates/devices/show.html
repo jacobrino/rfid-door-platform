@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Détail appareil{% endblock %}
+
+{% block page_content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ device.device_name }}</h1>
+            <p class="text-muted mb-0">Détail d’un appareil</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            {% if current_user.role and current_user.role.name == "admin" %}
+            <a href="/devices/{{ device.id }}/edit" class="btn btn-primary">Modifier</a>
+            {% endif %}
+            <a href="/devices" class="btn btn-outline-secondary">Retour</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Informations générales</h6>
+                    <p class="mb-2"><strong>Nom :</strong> {{ device.device_name }}</p>
+                    <p class="mb-2"><strong>Code appareil :</strong> {{ device.device_code }}</p>
+                    <p class="mb-2"><strong>Localisation :</strong> {{ device.location or "—" }}</p>
+                    <p class="mb-2">
+                        <strong>Statut :</strong>
+                        {% if device.is_active %}
+                        <span class="badge text-bg-success">Actif</span>
+                        {% else %}
+                        <span class="badge text-bg-secondary">Inactif</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted">Suivi</h6>
+                    <p class="mb-2">
+                        <strong>Dernière activité :</strong>
+                        {{ device.last_seen_at.strftime("%d/%m/%Y %H:%M") if device.last_seen_at else "—" }}
+                    </p>
+                    <p class="mb-2"><strong>Créé le :</strong> {{ device.created_at.strftime("%d/%m/%Y %H:%M") }}</p>
+                    <p class="mb-2"><strong>Mis à jour le :</strong> {{ device.updated_at.strftime("%d/%m/%Y %H:%M") }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.role and current_user.role.name == "admin" %}
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <h5 class="card-title">Régénérer le token API</h5>
+            <p class="text-muted">
+                Cette action va générer un nouveau token pour l’appareil. L’ancien token ne fonctionnera plus.
+            </p>
+
+            <form method="post" action="/devices/{{ device.id }}/regenerate-token"
+                  onsubmit="return confirm('Voulez-vous vraiment régénérer le token ?');">
+                <button type="submit" class="btn btn-outline-danger">
+                    Régénérer le token
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

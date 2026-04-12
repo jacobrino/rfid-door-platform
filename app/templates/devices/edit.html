@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier un appareil{% endblock %}
+
+{% block page_content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Modifier un appareil</h1>
+        <p class="text-muted mb-0">
+            Mise à jour de {{ device.device_name }}
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="post" action="/devices/{{ device.id }}/edit" class="row g-3">
+                <div class="col-md-6">
+                    <label for="device_name" class="form-label">Nom de l’appareil</label>
+                    <input type="text" class="form-control" id="device_name" name="device_name"
+                           value="{{ form_data.get('device_name', '') }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="device_code" class="form-label">Code appareil</label>
+                    <input type="text" class="form-control" id="device_code" name="device_code"
+                           value="{{ form_data.get('device_code', '') }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="location" class="form-label">Localisation</label>
+                    <input type="text" class="form-control" id="location" name="location"
+                           value="{{ form_data.get('location', '') }}">
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="is_active"
+                            name="is_active"
+                            {% if form_data.get('is_active', False) %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="is_active">
+                            Appareil actif
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    <a href="/devices/{{ device.id }}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

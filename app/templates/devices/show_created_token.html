@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Token appareil généré{% endblock %}
+
+{% block page_content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Token appareil</h1>
+        <p class="text-muted mb-0">Copie ce token maintenant. Il ne sera plus réaffiché ensuite.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <p class="mb-2"><strong>Appareil :</strong> {{ device.device_name }}</p>
+            <p class="mb-2"><strong>Code appareil :</strong> {{ device.device_code }}</p>
+            <p class="mb-3"><strong>Localisation :</strong> {{ device.location or "—" }}</p>
+
+            <label for="generated_token" class="form-label">Token API généré</label>
+            <textarea id="generated_token" class="form-control" rows="4" readonly>{{ generated_token }}</textarea>
+
+            <div class="alert alert-warning mt-3 mb-0">
+                Conserve ce token en lieu sûr et configure-le côté ESP32. Il n’est pas stocké en clair dans la base.
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="/devices/{{ device.id }}" class="btn btn-primary">Voir l’appareil</a>
+        <a href="/devices" class="btn btn-outline-secondary">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}
