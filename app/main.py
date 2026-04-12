@@ -5,6 +5,8 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import settings
+from app.middleware.auth_redirect import AuthRedirectMiddleware
+
 from app.api.routes.auth import router as auth_router
 from app.api.routes.dashboard import router as dashboard_router
 from app.api.routes.role_test import router as role_test_router
@@ -19,6 +21,9 @@ app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.APP_DEBUG,
 )
+
+
+app.add_middleware(AuthRedirectMiddleware)
 
 app.add_middleware(
     SessionMiddleware,

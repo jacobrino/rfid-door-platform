@@ -70,3 +70,9 @@ def login_submit(
     request.session["role_name"] = user.role.name if user.role else ""
 
     return RedirectResponse(url="/dashboard", status_code=303)
+
+
+@router.get("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/login", status_code=303)
