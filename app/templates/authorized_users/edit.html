@@ -29,7 +29,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="gender" class="form-label">Genre</label>
-                        <select class="form-select" id="gender" name="gender">
+                        <select class="form-select" id="gender" name="gender" required>
                             <option value="">Choisir</option>
                             <option value="Homme" {% if form_data.get('gender') == 'Homme' %}selected{% endif %}>Homme</option>
                             <option value="Femme" {% if form_data.get('gender') == 'Femme' %}selected{% endif %}>Femme</option>
@@ -37,7 +37,19 @@
                     </div>
                     <div class="col-md-4">
                         <label for="phone" class="form-label">Téléphone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ form_data.get('phone', '') }}">
+                        <input
+                            type="tel"
+                            class="form-control"
+                            id="phone"
+                            name="phone"
+                            value="{{ form_data.get('phone', '') }}"
+                            placeholder="+261340000001"
+                            pattern="^\+[0-9]{8,15}$"
+                            inputmode="tel"
+                        >
+                        <div class="form-text">
+                            Format attendu : + suivi de 8 à 15 chiffres.
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <label for="email" class="form-label">E-mail</label>

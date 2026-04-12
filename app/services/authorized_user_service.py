@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.crud.authorized_user import (
@@ -17,6 +18,23 @@ class AuthorizedUserServiceError(Exception):
     pass
 
 
+def _handle_authorized_user_integrity_error(db: Session, exc: IntegrityError) -> None:
+    db.rollback()
+
+    error_text = str(exc.orig).lower()
+
+    if "ix_authorized_users_email" in error_text or "duplicate entry" in error_text and "email" in error_text:
+        raise AuthorizedUserServiceError("Cette adresse e-mail existe déjà.")
+
+    if "ix_authorized_users_phone" in error_text or "duplicate entry" in error_text and "phone" in error_text:
+        raise AuthorizedUserServiceError("Ce numéro de téléphone existe déjà.")
+
+    if "reference_code" in error_text:
+        raise AuthorizedUserServiceError("Ce code de référence existe déjà.")
+
+    raise AuthorizedUserServiceError("Impossible d’enregistrer cet utilisateur à cause d’une contrainte d’unicité.")
+
+
 def create_authorized_user_service(
     db: Session,
     payload: AuthorizedUserCreate,
@@ -30,7 +48,10 @@ def create_authorized_user_service(
     if payload.phone and phone_exists(db, payload.phone):
         raise AuthorizedUserServiceError("Ce numéro de téléphone existe déjà.")
 
-    return create_authorized_user(db, payload)
+    try:
+        return create_authorized_user(db, payload)
+    except IntegrityError as exc:
+        _handle_authorized_user_integrity_error(db, exc)
 
 
 def update_authorized_user_service(
@@ -64,7 +85,10 @@ def update_authorized_user_service(
     ):
         raise AuthorizedUserServiceError("Ce numéro de téléphone existe déjà.")
 
-    return update_authorized_user(db, authorized_user, payload)
+    try:
+        return update_authorized_user(db, authorized_user, payload)
+    except IntegrityError as exc:
+        _handle_authorized_user_integrity_error(db, exc)
 
 
 def soft_delete_authorized_user_service(

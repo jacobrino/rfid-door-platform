@@ -2,13 +2,15 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 from typing import Literal
+import re
 
 GenderType = Literal["Homme", "Femme"]
+PHONE_REGEX = re.compile(r"^\+[0-9]{8,15}$")
 
 class AuthorizedUserBase(BaseModel):
     first_name: str
     last_name: str
-    gender: GenderType | None = None
+    gender: GenderType
     phone: str | None = None
     email: EmailStr | None = None
     reference_code: str | None = None
@@ -37,9 +39,18 @@ class AuthorizedUserBase(BaseModel):
     @classmethod
     def validate_phone(cls, value: str | None) -> str | None:
         if value is None:
-            return value
+            return None
+
         value = value.strip()
-        return value or None
+        if not value:
+            return None
+
+        if not PHONE_REGEX.fullmatch(value):
+            raise ValueError(
+                "Le téléphone doit commencer par + et contenir uniquement 8 à 15 chiffres."
+            )
+
+        return value
 
     @field_validator("notes")
     @classmethod

@@ -50,7 +50,7 @@ def build_authorized_user(index: int) -> dict:
         "first_name": first_name,
         "last_name": last_name,
         "gender": gender,
-        "phone": f"034000{index + 1000:04d}",
+        "phone": f"+26134{index + 100000:06d}",
         "email": f"user{index + 1:02d}@test.local",
         "reference_code": f"USR{index + 1:03d}",
         "valid_from": valid_from,
