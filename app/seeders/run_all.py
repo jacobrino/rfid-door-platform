@@ -21,6 +21,8 @@ def main():
         seed_assignments(db, total=20)
         seed_access_logs(db, total=20)
         print("All seeders executed successfully.")
+    except Exception as e:
+        print("Une erreur est survenue durant l'execution des seeds :", e)
     finally:
         db.close()
 

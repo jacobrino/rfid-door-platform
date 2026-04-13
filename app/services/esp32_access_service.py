@@ -113,7 +113,6 @@ def check_esp32_access_service(
     scanned_at = payload.scanned_at or datetime.utcnow()
 
     device = get_device_by_code(db, payload.device_code)
-    print('device.api_token_hash', device.api_token_hash)
 
     if not device:
         raise Esp32AccessServiceError("Appareil introuvable.")
