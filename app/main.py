@@ -30,8 +30,8 @@ app.add_middleware(
     secret_key=settings.SECRET_KEY,
 )
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
+app.mount("/static", StaticFiles(directory=settings.static_path), name="static")
+templates = Jinja2Templates(directory=settings.template_path)
 
 app.include_router(auth_router)
 app.include_router(dashboard_router)

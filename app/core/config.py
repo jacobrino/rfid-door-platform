@@ -1,22 +1,23 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from pathlib import Path
 
 class Settings(BaseSettings):
-    APP_NAME: str = "RFID Door Platform"
-    APP_ENV: str = "development"
-    APP_DEBUG: bool = True
-    APP_HOST: str = "127.0.0.1"
-    APP_PORT: int = 8000
+    APP_NAME: str
+    APP_ENV: str
+    APP_DEBUG: bool
+    APP_HOST: str
+    APP_PORT: int
 
-    DB_HOST: str = "127.0.0.1"
-    DB_PORT: int = 3306
-    DB_NAME: str = "rfid_door_db"
-    DB_USER: str = "root"
-    DB_PASSWORD: str = ""
+    DB_HOST: str 
+    DB_PORT: int 
+    DB_NAME: str
+    DB_USER: str
+    DB_PASSWORD: str
 
-    SECRET_KEY: str = "change_this_secret_key"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-
+    SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    DIRECTORY_PATH_STATIC_FILE:str
+    TEMPLATE_PATH_FILE:str
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
@@ -25,6 +26,13 @@ class Settings(BaseSettings):
             f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
+    
+    @property
+    def static_path(self) -> Path:
+        return Path(self.DIRECTORY_PATH_STATIC_FILE)
+    @property
+    def template_path(self) ->Path:
+        return Path(self.TEMPLATE_PATH_FILE)
 
 
 settings = Settings()
