@@ -8,6 +8,8 @@ from app.models.staff_user import StaffUser
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> StaffUser:
     user_id = request.session.get("user_id")
 
+    print('ici dans get_current_user',user_id)
+
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
