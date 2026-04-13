@@ -169,7 +169,7 @@
                         <h5 class="card-title mb-1">Derniers événements</h5>
                         <p class="text-muted mb-0">Aperçu des derniers scans enregistrés.</p>
                     </div>
-                    <a href="/access-logs" class="btn btn-outline-primary btn-sm">Voir tout</a>
+                    <a href="{{ request.url_for('access_log.index') }}" class="btn btn-outline-primary btn-sm">Voir tout</a>
                 </div>
 
                 {% if recent_events %}
@@ -219,7 +219,7 @@
                         <h5 class="card-title mb-1">Derniers refus</h5>
                         <p class="text-muted mb-0">Événements refusés les plus récents.</p>
                     </div>
-                    <a href="/access-logs?access_status=denied" class="btn btn-outline-danger btn-sm">Voir les refus</a>
+                    <a href="{{ request.url_for('access_log.index') }}?access_status=denied" class="btn btn-outline-danger btn-sm">Voir les refus</a>
                 </div>
 
                 {% if recent_denied_events %}

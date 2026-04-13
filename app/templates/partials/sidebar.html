@@ -28,7 +28,7 @@
             Appareils
         </a>
 
-        <a href="/access-logs" class="sidebar-link {% if request.url.path.startswith('/access-logs') %}active{% endif %}">
+        <a href="{{ request.url_for('access_log.index') }}" class="sidebar-link {% if request.url.path.startswith(request.url_for('access_log.index').path) %}active{% endif %}"">
             Historique d’accès
         </a>
     </nav>
@@ -62,7 +62,7 @@
                     Appareils
                 </a>
 
-                <a href="/access-logs" class="sidebar-link {% if request.url.path.startswith('/access-logs') %}active{% endif %}">
+                <a href="{{request.url_for('access_log.index')}}" class="sidebar-link {% if request.url.path.startswith(request.url_for('access_log.index').path) %}active{% endif %}">
                     Historique d’accès
                 </a>
             </nav>

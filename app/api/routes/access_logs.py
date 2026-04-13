@@ -47,7 +47,7 @@ def parse_datetime_local(value: str | None) -> datetime | None:
         return None
 
 
-@router.get("/access-logs", response_class=HTMLResponse)
+@router.get("/access-logs", name="access_log.index",response_class=HTMLResponse)
 def access_logs_index(
     request: Request,
     page: int = Query(default=1, ge=1),
@@ -126,7 +126,7 @@ def access_logs_index(
     )
 
 
-@router.get("/access-logs/{access_log_id}", response_class=HTMLResponse)
+@router.get("/access-logs/{access_log_id}", name="access_log.show", response_class=HTMLResponse)
 def access_logs_show(
     access_log_id: int,
     request: Request,
@@ -134,9 +134,10 @@ def access_logs_show(
     current_user: StaffUser = Depends(require_agent_or_admin),
 ):
     log = get_access_log_by_id(db, access_log_id)
+    print('iciiii : ',request.url_for)    
 
     if not log:
-        return RedirectResponse(url="/access-logs", status_code=303)
+        return RedirectResponse(url=request.url_for('access_log'), status_code=303)
 
     return templates.TemplateResponse(
         request=request,
