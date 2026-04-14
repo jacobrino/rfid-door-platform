@@ -13,14 +13,14 @@
         <p class="page-subtitle">Ajoute une nouvelle personne autorisée à accéder à la porte.</p>
     </div>
     <div class="page-actions">
-        <a href="/authorized-users" class="btn btn-outline-secondary">Retour à la liste</a>
+        <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-secondary">Retour à la liste</a>
     </div>
 </div>
 
 
 <div class="card form-page-card">
     <div class="card-body">
-        <form method="post" action="/authorized-users/create">
+        <form method="post" action="{{request.url_for('authorized_users.create.store')}}">
             <div class="form-section">
                 <div class="form-section-title">Informations personnelles</div>
                 <div class="row g-3">
@@ -107,7 +107,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <a href="/authorized-users" class="btn btn-outline-secondary">Annuler</a>
+                <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-secondary">Annuler</a>
             </div>
         </form>
     </div>
