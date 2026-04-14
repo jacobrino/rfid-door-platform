@@ -17,7 +17,7 @@
                             </p>
                         </div>
 
-                        <form method="post" action="/login" novalidate>
+                        <form method="post" action="{{request.url_for('auth.login.index')}}" novalidate>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Adresse e-mail</label>
                                 <input
