@@ -25,16 +25,15 @@ class AuthRedirectMiddleware(BaseHTTPMiddleware):
         if path.startswith(public_prefixes):
             return await call_next(request)
 
-        # Si déjà connecté, /login redirige vers /dashboard
-        if path == "/login" and user_id:
-            return RedirectResponse(url="/dashboard", status_code=303)
+        if path == request.url_for("auth.login.index").path and user_id:
+            return RedirectResponse(url=request.url_for("dashboard.index"), status_code=303)
 
         # Routes publiques autorisées sans connexion
-        if path in public_paths or path == "/login":
+        if path in public_paths or path == request.url_for("auth.login.index").path:
             return await call_next(request)
 
         # Toute autre route web protégée redirige vers /login si non connecté
         if not user_id:
-            return RedirectResponse(url="/login", status_code=303)
+            return RedirectResponse(url=request.url_for("auth.login.index"), status_code=303)
 
         return await call_next(request)
