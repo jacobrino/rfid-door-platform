@@ -9,13 +9,13 @@
         <p class="page-subtitle">Mets à jour les informations de {{ user.first_name }} {{ user.last_name }}.</p>
     </div>
     <div class="page-actions">
-        <a href="/authorized-users/{{ user.id }}" class="btn btn-outline-secondary">Retour au détail</a>
+        <a href="{{request.url_for('authorized_users.show',authorized_user_id=user.id)}}" class="btn btn-outline-secondary">Retour au détail</a>
     </div>
 </div>
 
 <div class="card form-page-card">
     <div class="card-body">
-        <form method="post" action="/authorized-users/{{ user.id }}/edit">
+        <form method="post" action="{{request.url_for('authorized_users.edit.store')}}">
             <div class="form-section">
                 <div class="form-section-title">Informations personnelles</div>
                 <div class="row g-3">
@@ -89,7 +89,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
-                <a href="/authorized-users/{{ user.id }}" class="btn btn-outline-secondary">Annuler</a>
+                <a href="{{request.url_for('authorized_users.show',authorized_user_id=user.id)}}" class="btn btn-outline-secondary">Annuler</a>
             </div>
         </form>
     </div>
