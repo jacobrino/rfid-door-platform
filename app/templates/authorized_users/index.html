@@ -24,7 +24,7 @@
         </button>
 
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="/authorized-users/create" class="btn btn-primary">
+        <a href="{{request.url_for('authorized_users.create.index')}}" class="btn btn-primary">
             Nouvel utilisateur
         </a>
         {% endif %}
@@ -34,7 +34,7 @@
 <div class="collapse mb-4" id="filtersPanel">
     <div class="card filter-panel">
         <div class="card-body">
-            <form method="get" action="/authorized-users" class="row g-3">
+            <form method="get" action="{{request.url_for('authorized_users.index')}}" class="row g-3">
                 <div class="col-md-4">
                     <label for="search" class="form-label">Recherche</label>
                     <input
@@ -71,7 +71,7 @@
 
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer</button>
-                    <a href="/authorized-users" class="btn btn-outline-secondary">Réinitialiser</a>
+                    <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-secondary">Réinitialiser</a>
                 </div>
             </form>
         </div>
