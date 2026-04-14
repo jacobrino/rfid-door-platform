@@ -22,7 +22,7 @@
         </button>
 
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="/assignments/create" class="btn btn-primary">
+        <a href="{{request.url_for('assignments.create.index')}}" class="btn btn-primary">
             Nouvelle affectation
         </a>
         {% endif %}
@@ -32,7 +32,7 @@
 <div class="collapse mb-4" id="filtersPanel">
     <div class="card filter-panel">
         <div class="card-body">
-            <form method="get" action="/assignments" class="row g-3">
+            <form method="get" action="{{request.url_for('assignments.index')}}" class="row g-3">
                 <div class="col-md-3">
                     <label for="rfid_card_id" class="form-label">Carte RFID</label>
                     <select class="form-select" id="rfid_card_id" name="rfid_card_id">
@@ -83,7 +83,7 @@
 
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer</button>
-                    <a href="/assignments" class="btn btn-outline-secondary">Réinitialiser</a>
+                    <a href="{{request.url_for('assignments.index')}}" class="btn btn-outline-secondary">Réinitialiser</a>
                 </div>
             </form>
         </div>
@@ -161,7 +161,8 @@
                             {% endif %}
                         </td>
                         <td class="text-end">
-                            <a href="/assignments/{{ assignment.id }}" class="btn btn-sm btn-outline-info">
+                            
+                            <a href="{{request.url_for('assignments.show',assignment_id=assignment.id)}}" class="btn btn-sm btn-outline-info">
                                 Voir
                             </a>
                         </td>
@@ -175,7 +176,8 @@
             <ul class="pagination pagination-modern mb-0">
                 <li class="page-item {% if not has_previous %}disabled{% endif %}">
                     <a class="page-link"
-                       href="/assignments?page={{ previous_page }}&rfid_card_id={{ filters.rfid_card_id or '' }}&authorized_user_id={{ filters.authorized_user_id or '' }}&assigned_by_staff_id={{ filters.assigned_by_staff_id or '' }}&status={{ filters.status }}">
+
+                       href="{{request.url_for('assignments.index')}}?page={{ previous_page }}&rfid_card_id={{ filters.rfid_card_id or '' }}&authorized_user_id={{ filters.authorized_user_id or '' }}&assigned_by_staff_id={{ filters.assigned_by_staff_id or '' }}&status={{ filters.status }}">
                         Précédent
                     </a>
                 </li>
@@ -183,7 +185,7 @@
                 {% for page_number in page_numbers %}
                 <li class="page-item {% if page_number == current_page %}active{% endif %}">
                     <a class="page-link"
-                       href="/assignments?page={{ page_number }}&rfid_card_id={{ filters.rfid_card_id or '' }}&authorized_user_id={{ filters.authorized_user_id or '' }}&assigned_by_staff_id={{ filters.assigned_by_staff_id or '' }}&status={{ filters.status }}">
+                       href="{{request.url_for('assignments.index')}}?page={{ page_number }}&rfid_card_id={{ filters.rfid_card_id or '' }}&authorized_user_id={{ filters.authorized_user_id or '' }}&assigned_by_staff_id={{ filters.assigned_by_staff_id or '' }}&status={{ filters.status }}">
                         {{ page_number }}
                     </a>
                 </li>
@@ -191,7 +193,7 @@
 
                 <li class="page-item {% if not has_next %}disabled{% endif %}">
                     <a class="page-link"
-                       href="/assignments?page={{ next_page }}&rfid_card_id={{ filters.rfid_card_id or '' }}&authorized_user_id={{ filters.authorized_user_id or '' }}&assigned_by_staff_id={{ filters.assigned_by_staff_id or '' }}&status={{ filters.status }}">
+                       href="{{request.url_for('assignments.index')}}?page={{ next_page }}&rfid_card_id={{ filters.rfid_card_id or '' }}&authorized_user_id={{ filters.authorized_user_id or '' }}&assigned_by_staff_id={{ filters.assigned_by_staff_id or '' }}&status={{ filters.status }}">
                         Suivant
                     </a>
                 </li>

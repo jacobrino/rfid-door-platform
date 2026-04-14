@@ -9,7 +9,7 @@
         <p class="page-subtitle">Détail complet d’une affectation RFID.</p>
     </div>
     <div class="page-actions">
-        <a href="/assignments" class="btn btn-outline-secondary">Retour</a>
+        <a href="{{request.url_for('assignments.index')}}" class="btn btn-outline-secondary">Retour</a>
     </div>
 </div>
 
@@ -50,7 +50,7 @@
         <div class="card action-card">
             <div class="card-body">
                 <h5 class="card-title">Retirer l’affectation</h5>
-                <form method="post" action="/assignments/{{ assignment.id }}/unassign">
+                <form method="post" action="{{request.url_for('assignments.unassign',assignment_id=assignment.id)}}">
                     <div class="mb-3">
                         <label for="unassign_notes" class="form-label">Notes</label>
                         <textarea class="form-control" id="unassign_notes" name="notes" rows="3"></textarea>
@@ -65,7 +65,7 @@
         <div class="card action-card">
             <div class="card-body">
                 <h5 class="card-title">Révoquer l’affectation</h5>
-                <form method="post" action="/assignments/{{ assignment.id }}/revoke">
+                <form method="post" action="{{request.url_for('assignments.revoke',assignment_id=assignment.id)}}">
                     <div class="mb-3">
                         <label for="revoke_notes" class="form-label">Notes</label>
                         <textarea class="form-control" id="revoke_notes" name="notes" rows="3"></textarea>
@@ -80,7 +80,7 @@
         <div class="card action-card">
             <div class="card-body">
                 <h5 class="card-title">Marquer comme expirée</h5>
-                <form method="post" action="/assignments/{{ assignment.id }}/expire">
+                <form method="post" action="{{request.url_for('assignments.expire',assignment_id=assignment.id)}}">
                     <div class="mb-3">
                         <label for="expire_notes" class="form-label">Notes</label>
                         <textarea class="form-control" id="expire_notes" name="notes" rows="3"></textarea>

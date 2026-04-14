@@ -13,13 +13,13 @@
         <p class="page-subtitle">Associe une carte RFID à un utilisateur autorisé.</p>
     </div>
     <div class="page-actions">
-        <a href="/assignments" class="btn btn-outline-secondary">Retour à la liste</a>
+        <a href="{{request.url_for('assignments.index')}}" class="btn btn-outline-secondary">Retour à la liste</a>
     </div>
 </div>
 
 <div class="card form-page-card">
     <div class="card-body">
-        <form method="post" action="/assignments/create">
+        <form method="post" action="{{request.url_for('assignments.create.store')}}">
             <div class="form-section">
                 <div class="form-section-title">Liaison principale</div>
                 <div class="row g-3">
@@ -90,7 +90,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <a href="/assignments" class="btn btn-outline-secondary">Annuler</a>
+                <a href="{{request.url_for('assignments.index')}}" class="btn btn-outline-secondary">Annuler</a>
             </div>
         </form>
     </div>
