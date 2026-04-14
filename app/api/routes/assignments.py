@@ -1,4 +1,5 @@
 from datetime import datetime
+from app.core.config import settings
 
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -28,7 +29,7 @@ from app.services.rfid_assignment_service import (
 )
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10
 ASSIGNMENT_STATUSES = ["active", "expired", "unassigned", "revoked"]

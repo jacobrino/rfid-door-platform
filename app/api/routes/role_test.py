@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.core.config import settings
 
 from app.core.dependencies import require_admin, require_agent_or_admin
 from app.models.staff_user import StaffUser
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.template_path)
 
 
 @router.get("/admin-only", response_class=HTMLResponse)

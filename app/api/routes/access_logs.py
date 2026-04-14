@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from app.core.config import settings
 
 from app.core.database import get_db
 from app.core.dependencies import require_agent_or_admin
@@ -16,7 +17,7 @@ from app.crud.access_log import (
 from app.models.staff_user import StaffUser
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10
 

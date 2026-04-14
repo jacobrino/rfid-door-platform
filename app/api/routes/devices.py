@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
+from app.core.config import settings
 
 from app.core.database import get_db
 from app.core.dependencies import require_admin, require_agent_or_admin
@@ -17,7 +18,7 @@ from app.services.device_service import (
 )
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10
 

@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     DIRECTORY_PATH_STATIC_FILE:str
-    TEMPLATE_PATH_FILE:str
+    DIRECTORY_PATH_TEMPLATE_FILE:str
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
@@ -32,7 +32,7 @@ class Settings(BaseSettings):
         return Path(self.DIRECTORY_PATH_STATIC_FILE)
     @property
     def template_path(self) ->Path:
-        return Path(self.TEMPLATE_PATH_FILE)
+        return Path(self.DIRECTORY_PATH_TEMPLATE_FILE)
 
 
 settings = Settings()
