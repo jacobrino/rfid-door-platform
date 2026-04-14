@@ -10,12 +10,12 @@
     </div>
     <div class="page-actions">
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="/authorized-users/{{ user.id }}/edit" class="btn btn-primary">Modifier</a>
-        <form method="post" action="/authorized-users/{{ user.id }}/delete" onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+        <a href="{{request.url_for('authorized_users.edit',authorized_user_id=user.id)}}" class="btn btn-primary">Modifier</a>
+        <form method="post" action="{{request.url_for('authorized_users.delete',authorized_user_id=user.id)}}" onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
             <button type="submit" class="btn btn-danger">Supprimer</button>
         </form>
         {% endif %}
-        <a href="/authorized-users" class="btn btn-outline-secondary">Retour</a>
+        <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-secondary">Retour</a>
     </div>
 </div>
 
