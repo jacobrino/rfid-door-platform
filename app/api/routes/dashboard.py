@@ -20,7 +20,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory=settings.template_path)
 
 
-@router.get("/dashboard", response_class=HTMLResponse)
+@router.get("/dashboard", name="dashboard.index",response_class=HTMLResponse)
 def dashboard(
     request: Request,
     db: Session = Depends(get_db),

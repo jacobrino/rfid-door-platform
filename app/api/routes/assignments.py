@@ -54,7 +54,7 @@ def parse_optional_int(value: str | None) -> int | None:
     return int(value.strip())
 
 
-@router.get("/assignments", response_class=HTMLResponse)
+@router.get("/assignments", name="assignments.index", response_class=HTMLResponse)
 def assignments_index(
     request: Request,
     page: int = Query(default=1, ge=1),
@@ -119,7 +119,7 @@ def assignments_index(
     )
 
 
-@router.get("/assignments/create", response_class=HTMLResponse)
+@router.get("/assignments/create",name="assignments.create.index", response_class=HTMLResponse)
 def assignments_create_page(
     request: Request,
     db: Session = Depends(get_db),
@@ -145,8 +145,7 @@ def assignments_create_page(
         },
     )
 
-
-@router.post("/assignments/create", response_class=HTMLResponse)
+@router.post("/assignments/create", name="assignments.create.store", response_class=HTMLResponse)
 def assignments_store(
     request: Request,
     rfid_card_id: int = Form(...),
@@ -189,7 +188,7 @@ def assignments_store(
             assigned_by_staff_id=current_user.id,
         )
 
-        return RedirectResponse(url="/assignments", status_code=303)
+        return RedirectResponse(url=str(request.url_for("assignments.index")), status_code=303)
 
     except ValidationError as e:
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
@@ -224,7 +223,9 @@ def assignments_store(
         )
 
 
-@router.get("/assignments/{assignment_id}", response_class=HTMLResponse)
+
+
+@router.get("/assignments/{assignment_id}", name="assignments.show", response_class=HTMLResponse)
 def assignments_show(
     assignment_id: int,
     request: Request,
@@ -234,7 +235,7 @@ def assignments_show(
     assignment = get_rfid_assignment_by_id(db, assignment_id)
 
     if not assignment:
-        return RedirectResponse(url="/assignments", status_code=303)
+        return RedirectResponse(url=str(request.url_for("assignments.index")), status_code=303)
 
     return templates.TemplateResponse(
         request=request,
@@ -247,8 +248,9 @@ def assignments_show(
     )
 
 
-@router.post("/assignments/{assignment_id}/unassign")
+@router.post("/assignments/{assignment_id}/unassign", name="assignments.unassign")
 def assignments_unassign(
+    request: Request,
     assignment_id: int,
     notes: str | None = Form(None),
     db: Session = Depends(get_db),
@@ -259,11 +261,14 @@ def assignments_unassign(
     except RfidAssignmentServiceError:
         pass
 
-    return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
+    
+    
+    return RedirectResponse(url=request.url_for('assignments.show',assignment_id=assignment_id), status_code=303)
 
 
-@router.post("/assignments/{assignment_id}/revoke")
+@router.post("/assignments/{assignment_id}/revoke",name="assignments.revoke")
 def assignments_revoke(
+    request: Request,
     assignment_id: int,
     notes: str | None = Form(None),
     db: Session = Depends(get_db),
@@ -274,11 +279,12 @@ def assignments_revoke(
     except RfidAssignmentServiceError:
         pass
 
-    return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
+    return RedirectResponse(url=request.url_for('assignments.show',assignment_id=assignment_id), status_code=303)
 
 
-@router.post("/assignments/{assignment_id}/expire")
+@router.post("/assignments/{assignment_id}/expire",name="assignments.expire")
 def assignments_expire(
+    request: Request,
     assignment_id: int,
     notes: str | None = Form(None),
     db: Session = Depends(get_db),
@@ -289,4 +295,4 @@ def assignments_expire(
     except RfidAssignmentServiceError:
         pass
 
-    return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
+    return RedirectResponse(url=request.url_for('assignments.show',assignment_id=assignment_id), status_code=303)

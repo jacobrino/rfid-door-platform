@@ -12,7 +12,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory=settings.template_path)
 
 
-@router.get("/login", response_class=HTMLResponse)
+@router.get("/login", name="auth.login.index",response_class=HTMLResponse)
 def login_page(request: Request):
     return templates.TemplateResponse(
         request=request,
@@ -21,7 +21,7 @@ def login_page(request: Request):
     )
 
 
-@router.post("/login", response_class=HTMLResponse)
+@router.post("/login", name="auth.login.store",response_class=HTMLResponse)
 def login_submit(
     request: Request,
     email: str = Form(""),
@@ -70,10 +70,10 @@ def login_submit(
     request.session["full_name"] = f"{user.first_name} {user.last_name}"
     request.session["role_name"] = user.role.name if user.role else ""
 
-    return RedirectResponse(url="/dashboard", status_code=303)
+    return RedirectResponse(url=request.url_for('dashboard.index'), status_code=303)
 
 
-@router.get("/logout")
+@router.get("/logout",name="auth.logout")
 def logout(request: Request):
     request.session.clear()
-    return RedirectResponse(url="/login", status_code=303)
+    return RedirectResponse(url=request.url_for('auth.login.index'), status_code=303)

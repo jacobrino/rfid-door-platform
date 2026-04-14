@@ -48,7 +48,7 @@ def parse_datetime_local(value: str | None) -> datetime | None:
         return None
 
 
-@router.get("/access-logs", name="access_log.index",response_class=HTMLResponse)
+@router.get("/access-logs", name="access_logs.index",response_class=HTMLResponse)
 def access_logs_index(
     request: Request,
     page: int = Query(default=1, ge=1),
@@ -70,9 +70,11 @@ def access_logs_index(
     parsed_date_from = parse_datetime_local(date_from)
     parsed_date_to = parse_datetime_local(date_to)
 
-    if parsed_date_to is None and parsed_date_from is None:
+    
+    # if parsed_date_from is None:
+    #     parsed_date_from = now - timedelta(days=1)
+    if parsed_date_to is None:
         parsed_date_to = now
-        parsed_date_from = now - timedelta(days=1)
 
     logs, total = get_access_logs_paginated(
         db,
@@ -127,7 +129,7 @@ def access_logs_index(
     )
 
 
-@router.get("/access-logs/{access_log_id}", name="access_log.show", response_class=HTMLResponse)
+@router.get("/access-logs/{access_log_id}", name="access_logs.show", response_class=HTMLResponse)
 def access_logs_show(
     access_log_id: int,
     request: Request,
@@ -135,10 +137,9 @@ def access_logs_show(
     current_user: StaffUser = Depends(require_agent_or_admin),
 ):
     log = get_access_log_by_id(db, access_log_id)
-    print('iciiii : ',request.url_for)    
-
+    
     if not log:
-        return RedirectResponse(url=request.url_for('access_log'), status_code=303)
+        return RedirectResponse(url=request.url_for('access_log.index'), status_code=303)
 
     return templates.TemplateResponse(
         request=request,

@@ -41,7 +41,7 @@ def clean_optional_string(value: str | None) -> str | None:
     return value or None
 
 
-@router.get("/authorized-users", response_class=HTMLResponse)
+@router.get("/authorized-users", name="authorized_users.index",response_class=HTMLResponse)
 def authorized_users_index(
     request: Request,
     page: int = Query(default=1, ge=1),
@@ -91,7 +91,164 @@ def authorized_users_index(
     )
 
 
-@router.get("/authorized-users/create", response_class=HTMLResponse)
+@router.get("/authorized-users/{authorized_user_id}", name="authorized_users.show", response_class=HTMLResponse)
+def authorized_users_show(
+    authorized_user_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: StaffUser = Depends(require_agent_or_admin),
+):
+    user = get_authorized_user_by_id(db, authorized_user_id)
+
+    if not user:
+        return RedirectResponse(url=request.url_for('authorized_users.index'), status_code=303)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="authorized_users/show.html",
+        context={
+            "request": request,
+            "user": user,
+            "current_user": current_user,
+        },
+    )
+
+
+@router.get("/authorized-users/{authorized_user_id}/edit", name="authorized_users.edit",response_class=HTMLResponse)
+def authorized_users_edit_page(
+    authorized_user_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: StaffUser = Depends(require_admin),
+):
+    user = get_authorized_user_by_id(db, authorized_user_id)
+
+    if not user:
+        return RedirectResponse(url=request.url_for('authorized_users.index'), status_code=303)
+
+    form_data = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "gender": user.gender or "",
+        "phone": user.phone or "",
+        "email": user.email or "",
+        "reference_code": user.reference_code or "",
+        "valid_from": user.valid_from.strftime("%Y-%m-%dT%H:%M") if user.valid_from else "",
+        "valid_until": user.valid_until.strftime("%Y-%m-%dT%H:%M") if user.valid_until else "",
+        "is_active": user.is_active,
+        "notes": user.notes or "",
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="authorized_users/edit.html",
+        context={
+            "request": request,
+            "user": user,
+            "error": None,
+            "form_data": form_data,
+            "current_user": current_user,
+        },
+    )
+
+
+@router.post("/authorized-users/{authorized_user_id}/edit",name="authorized_users.edit.store", response_class=HTMLResponse)
+def authorized_users_update(
+    authorized_user_id: int,
+    request: Request,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    gender: str | None = Form(None),
+    phone: str | None = Form(None),
+    email: str | None = Form(None),
+    reference_code: str | None = Form(None),
+    valid_from: str | None = Form(None),
+    valid_until: str | None = Form(None),
+    is_active: str | None = Form(None),
+    notes: str | None = Form(None),
+    db: Session = Depends(get_db),
+    current_user: StaffUser = Depends(require_admin),
+):
+    user = get_authorized_user_by_id(db, authorized_user_id)
+
+    if not user:
+        return RedirectResponse(url=request.url_for('authorized_users.index'), status_code=303)
+
+    form_data = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "gender": clean_optional_string(gender),
+        "phone": clean_optional_string(phone),
+        "email": clean_optional_string(email),
+        "reference_code": clean_optional_string(reference_code),
+        "valid_from": valid_from or "",
+        "valid_until": valid_until or "",
+        "is_active": is_active == "on",
+        "notes": clean_optional_string(notes),
+    }
+
+    try:
+        payload = AuthorizedUserUpdate(
+            first_name=first_name,
+            last_name=last_name,
+            gender=clean_optional_string(gender),
+            phone=clean_optional_string(phone),
+            email=clean_optional_string(email),
+            reference_code=clean_optional_string(reference_code),
+            valid_from=parse_optional_datetime(valid_from),
+            valid_until=parse_optional_datetime(valid_until),
+            is_active=is_active == "on",
+            notes=clean_optional_string(notes),
+        )
+
+        update_authorized_user_service(db, authorized_user_id, payload)
+
+        return RedirectResponse(url=request.url_for('authorized_users.show',authorized_user_id=authorized_user_id), status_code=303)
+
+
+    except ValidationError as e:
+        error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
+        return templates.TemplateResponse(
+            request=request,
+            name="authorized_users/edit.html",
+            context={
+                "request": request,
+                "user": user,
+                "error": error_message,
+                "form_data": form_data,
+                "current_user": current_user,
+            },
+            status_code=400,
+        )
+    except AuthorizedUserServiceError as e:
+        return templates.TemplateResponse(
+            request=request,
+            name="authorized_users/edit.html",
+            context={
+                "request": request,
+                "user": user,
+                "error": str(e),
+                "form_data": form_data,
+                "current_user": current_user,
+            },
+            status_code=400,
+        )
+
+
+@router.post("/authorized-users/{authorized_user_id}/delete")
+def authorized_users_delete(
+    request: Request,
+    authorized_user_id: int,
+    db: Session = Depends(get_db),
+):
+    try:
+        soft_delete_authorized_user_service(db, authorized_user_id)
+    except AuthorizedUserServiceError:
+        pass
+
+    return RedirectResponse(url=request.url_for('authorized_users.show',authorized_user_id=authorized_user_id), status_code=303)
+
+@router.get("/authorized-users/create", name="authorized_users.create.index",response_class=HTMLResponse)
 def authorized_users_create_page(
     request: Request,
     current_user: StaffUser = Depends(require_admin),
@@ -111,7 +268,7 @@ def authorized_users_create_page(
     )
 
 
-@router.post("/authorized-users/create", response_class=HTMLResponse)
+@router.post("/authorized-users/create", name="authorized_users.create.store",response_class=HTMLResponse)
 def authorized_users_store(
     request: Request,
     first_name: str = Form(...),
@@ -156,7 +313,7 @@ def authorized_users_store(
 
         create_authorized_user_service(db, payload)
 
-        return RedirectResponse(url="/authorized-users", status_code=303)
+        return RedirectResponse(url=request.url_for('authorized_users.index'), status_code=303)
 
     except ValidationError as e:
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
@@ -184,159 +341,3 @@ def authorized_users_store(
             status_code=400,
         )
 
-
-@router.get("/authorized-users/{authorized_user_id}", response_class=HTMLResponse)
-def authorized_users_show(
-    authorized_user_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user: StaffUser = Depends(require_agent_or_admin),
-):
-    user = get_authorized_user_by_id(db, authorized_user_id)
-
-    if not user:
-        return RedirectResponse(url="/authorized-users", status_code=303)
-
-    return templates.TemplateResponse(
-        request=request,
-        name="authorized_users/show.html",
-        context={
-            "request": request,
-            "user": user,
-            "current_user": current_user,
-        },
-    )
-
-
-@router.get("/authorized-users/{authorized_user_id}/edit", response_class=HTMLResponse)
-def authorized_users_edit_page(
-    authorized_user_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user: StaffUser = Depends(require_admin),
-):
-    user = get_authorized_user_by_id(db, authorized_user_id)
-
-    if not user:
-        return RedirectResponse(url="/authorized-users", status_code=303)
-
-    form_data = {
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "gender": user.gender or "",
-        "phone": user.phone or "",
-        "email": user.email or "",
-        "reference_code": user.reference_code or "",
-        "valid_from": user.valid_from.strftime("%Y-%m-%dT%H:%M") if user.valid_from else "",
-        "valid_until": user.valid_until.strftime("%Y-%m-%dT%H:%M") if user.valid_until else "",
-        "is_active": user.is_active,
-        "notes": user.notes or "",
-    }
-
-    return templates.TemplateResponse(
-        request=request,
-        name="authorized_users/edit.html",
-        context={
-            "request": request,
-            "user": user,
-            "error": None,
-            "form_data": form_data,
-            "current_user": current_user,
-        },
-    )
-
-
-@router.post("/authorized-users/{authorized_user_id}/edit", response_class=HTMLResponse)
-def authorized_users_update(
-    authorized_user_id: int,
-    request: Request,
-    first_name: str = Form(...),
-    last_name: str = Form(...),
-    gender: str | None = Form(None),
-    phone: str | None = Form(None),
-    email: str | None = Form(None),
-    reference_code: str | None = Form(None),
-    valid_from: str | None = Form(None),
-    valid_until: str | None = Form(None),
-    is_active: str | None = Form(None),
-    notes: str | None = Form(None),
-    db: Session = Depends(get_db),
-    current_user: StaffUser = Depends(require_admin),
-):
-    user = get_authorized_user_by_id(db, authorized_user_id)
-
-    if not user:
-        return RedirectResponse(url="/authorized-users", status_code=303)
-
-    form_data = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "gender": clean_optional_string(gender),
-        "phone": clean_optional_string(phone),
-        "email": clean_optional_string(email),
-        "reference_code": clean_optional_string(reference_code),
-        "valid_from": valid_from or "",
-        "valid_until": valid_until or "",
-        "is_active": is_active == "on",
-        "notes": clean_optional_string(notes),
-    }
-
-    try:
-        payload = AuthorizedUserUpdate(
-            first_name=first_name,
-            last_name=last_name,
-            gender=clean_optional_string(gender),
-            phone=clean_optional_string(phone),
-            email=clean_optional_string(email),
-            reference_code=clean_optional_string(reference_code),
-            valid_from=parse_optional_datetime(valid_from),
-            valid_until=parse_optional_datetime(valid_until),
-            is_active=is_active == "on",
-            notes=clean_optional_string(notes),
-        )
-
-        update_authorized_user_service(db, authorized_user_id, payload)
-
-        return RedirectResponse(url=f"/authorized-users/{authorized_user_id}", status_code=303)
-
-    except ValidationError as e:
-        error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
-        return templates.TemplateResponse(
-            request=request,
-            name="authorized_users/edit.html",
-            context={
-                "request": request,
-                "user": user,
-                "error": error_message,
-                "form_data": form_data,
-                "current_user": current_user,
-            },
-            status_code=400,
-        )
-    except AuthorizedUserServiceError as e:
-        return templates.TemplateResponse(
-            request=request,
-            name="authorized_users/edit.html",
-            context={
-                "request": request,
-                "user": user,
-                "error": str(e),
-                "form_data": form_data,
-                "current_user": current_user,
-            },
-            status_code=400,
-        )
-
-
-@router.post("/authorized-users/{authorized_user_id}/delete")
-def authorized_users_delete(
-    authorized_user_id: int,
-    db: Session = Depends(get_db),
-    current_user: StaffUser = Depends(require_admin),
-):
-    try:
-        soft_delete_authorized_user_service(db, authorized_user_id)
-    except AuthorizedUserServiceError:
-        pass
-
-    return RedirectResponse(url="/authorized-users", status_code=303)

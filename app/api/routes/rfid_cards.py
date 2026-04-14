@@ -38,7 +38,7 @@ def clean_optional_string(value: str | None) -> str | None:
     return value or None
 
 
-@router.get("/rfid-cards", response_class=HTMLResponse)
+@router.get("/rfid-cards", name="rfid_cards.index" ,response_class=HTMLResponse)
 def rfid_cards_index(
     request: Request,
     page: int = Query(default=1, ge=1),
@@ -85,8 +85,30 @@ def rfid_cards_index(
         },
     )
 
+@router.get("/rfid-cards/{rfid_card_id}", name="rfid_cards.show" ,response_class=HTMLResponse)
+def rfid_cards_show(
+    rfid_card_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: StaffUser = Depends(require_agent_or_admin),
+):
+    card = get_rfid_card_by_id(db, rfid_card_id)
 
-@router.get("/rfid-cards/create", response_class=HTMLResponse)
+    if not card:
+        return RedirectResponse(url=request.url_for('rfid_cards.index'), status_code=303)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="rfid_cards/show.html",
+        context={
+            "request": request,
+            "card": card,
+            "current_user": current_user,
+        },
+    )
+
+
+@router.get("/rfid-cards/create", name="rfid_cards.create.index" ,response_class=HTMLResponse)
 def rfid_cards_create_page(
     request: Request,
     current_user: StaffUser = Depends(require_admin),
@@ -104,7 +126,7 @@ def rfid_cards_create_page(
     )
 
 
-@router.post("/rfid-cards/create", response_class=HTMLResponse)
+@router.post("/rfid-cards/create",name="rfid_cards.create.store", response_class=HTMLResponse)
 def rfid_cards_store(
     request: Request,
     uid: str = Form(...),
@@ -134,7 +156,7 @@ def rfid_cards_store(
 
         create_rfid_card_service(db, payload)
 
-        return RedirectResponse(url="/rfid-cards", status_code=303)
+        return RedirectResponse(url=request.url_for('rfid_cards.index'), status_code=303)
 
     except ValidationError as e:
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
@@ -164,31 +186,7 @@ def rfid_cards_store(
             status_code=400,
         )
 
-
-@router.get("/rfid-cards/{rfid_card_id}", response_class=HTMLResponse)
-def rfid_cards_show(
-    rfid_card_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user: StaffUser = Depends(require_agent_or_admin),
-):
-    card = get_rfid_card_by_id(db, rfid_card_id)
-
-    if not card:
-        return RedirectResponse(url="/rfid-cards", status_code=303)
-
-    return templates.TemplateResponse(
-        request=request,
-        name="rfid_cards/show.html",
-        context={
-            "request": request,
-            "card": card,
-            "current_user": current_user,
-        },
-    )
-
-
-@router.get("/rfid-cards/{rfid_card_id}/edit", response_class=HTMLResponse)
+@router.get("/rfid-cards/{rfid_card_id}/edit", name="rfid_cards.edit.show" , response_class=HTMLResponse)
 def rfid_cards_edit_page(
     rfid_card_id: int,
     request: Request,
@@ -198,7 +196,7 @@ def rfid_cards_edit_page(
     card = get_rfid_card_by_id(db, rfid_card_id)
 
     if not card:
-        return RedirectResponse(url="/rfid-cards", status_code=303)
+        return RedirectResponse(url=request.url_for('rfid_cards.index'), status_code=303)
 
     form_data = {
         "uid": card.uid,
@@ -222,7 +220,7 @@ def rfid_cards_edit_page(
     )
 
 
-@router.post("/rfid-cards/{rfid_card_id}/edit", response_class=HTMLResponse)
+@router.post("/rfid-cards/{rfid_card_id}/edit", name="rfid_cards.edit.store" ,response_class=HTMLResponse)
 def rfid_cards_update(
     rfid_card_id: int,
     request: Request,
@@ -237,7 +235,7 @@ def rfid_cards_update(
     card = get_rfid_card_by_id(db, rfid_card_id)
 
     if not card:
-        return RedirectResponse(url="/rfid-cards", status_code=303)
+        return RedirectResponse(url=request.url_for('rfid_cards.index'), status_code=303)
 
     form_data = {
         "uid": uid,
@@ -258,7 +256,7 @@ def rfid_cards_update(
 
         update_rfid_card_service(db, rfid_card_id, payload)
 
-        return RedirectResponse(url=f"/rfid-cards/{rfid_card_id}", status_code=303)
+        return RedirectResponse(url=request.url_for('rfid_cards.show',rfid_card_id=rfid_card_id), status_code=303)
 
     except ValidationError as e:
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."

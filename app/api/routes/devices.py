@@ -30,7 +30,7 @@ def clean_optional_string(value: str | None) -> str | None:
     return value or None
 
 
-@router.get("/devices", response_class=HTMLResponse)
+@router.get("/devices", name="devices.index", response_class=HTMLResponse)
 def devices_index(
     request: Request,
     page: int = Query(default=1, ge=1),
@@ -77,7 +77,7 @@ def devices_index(
     )
 
 
-@router.get("/devices/create", response_class=HTMLResponse)
+@router.get("/devices/create",  name="devices.create.index", response_class=HTMLResponse)
 def devices_create_page(
     request: Request,
     current_user: StaffUser = Depends(require_admin),
@@ -95,7 +95,7 @@ def devices_create_page(
     )
 
 
-@router.post("/devices/create", response_class=HTMLResponse)
+@router.post("/devices/create", name="devices.create.store", response_class=HTMLResponse)
 def devices_store(
     request: Request,
     device_name: str = Form(...),
@@ -165,7 +165,7 @@ def devices_store(
         )
 
 
-@router.get("/devices/{device_id}", response_class=HTMLResponse)
+@router.get("/devices/{device_id}", name="devices.show",response_class=HTMLResponse)
 def devices_show(
     device_id: int,
     request: Request,
@@ -175,7 +175,7 @@ def devices_show(
     device = get_device_by_id(db, device_id)
 
     if not device:
-        return RedirectResponse(url="/devices", status_code=303)
+        return RedirectResponse(url=request.url_for('devices.index'), status_code=303)
 
     return templates.TemplateResponse(
         request=request,
@@ -189,7 +189,7 @@ def devices_show(
     )
 
 
-@router.get("/devices/{device_id}/edit", response_class=HTMLResponse)
+@router.get("/devices/{device_id}/edit", name="devices.edit.show", response_class=HTMLResponse)
 def devices_edit_page(
     device_id: int,
     request: Request,
@@ -199,7 +199,7 @@ def devices_edit_page(
     device = get_device_by_id(db, device_id)
 
     if not device:
-        return RedirectResponse(url="/devices", status_code=303)
+        return RedirectResponse(url=request.url_for('devices.index'), status_code=303)
 
     form_data = {
         "device_name": device.device_name,
@@ -221,7 +221,7 @@ def devices_edit_page(
     )
 
 
-@router.post("/devices/{device_id}/edit", response_class=HTMLResponse)
+@router.post("/devices/{device_id}/edit", name="devices.edit.store", response_class=HTMLResponse)
 def devices_update(
     device_id: int,
     request: Request,
@@ -254,7 +254,7 @@ def devices_update(
 
         update_device_service(db, device_id, payload)
 
-        return RedirectResponse(url=f"/devices/{device_id}", status_code=303)
+        return RedirectResponse(url=request.url_for('devices.show',device_id=device_id), status_code=303)
 
     except ValidationError as e:
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
@@ -285,7 +285,7 @@ def devices_update(
         )
 
 
-@router.post("/devices/{device_id}/regenerate-token", response_class=HTMLResponse)
+@router.post("/devices/{device_id}/regenerate-token", name="devices.regenerate_token", response_class=HTMLResponse)
 def devices_regenerate_token(
     device_id: int,
     request: Request,
@@ -295,7 +295,8 @@ def devices_regenerate_token(
     device = get_device_by_id(db, device_id)
 
     if not device:
-        return RedirectResponse(url="/devices", status_code=303)
+        return RedirectResponse(url=request.url_for('devices.index'), status_code=303)
+    
 
     try:
         updated_device, plain_token = regenerate_device_token_service(db, device_id)
