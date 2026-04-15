@@ -10,9 +10,9 @@
     </div>
     <div class="page-actions">
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="/rfid-cards/{{ card.id }}/edit" class="btn btn-primary">Modifier</a>
+        <a href="{{ request.url_for('rfid_cards.edit.show', rfid_card_id=card.id) }}" class="btn btn-primary">Modifier</a>
         {% endif %}
-        <a href="/rfid-cards" class="btn btn-outline-secondary">Retour</a>
+        <a href="{{ request.url_for('rfid_cards.index') }}" class="btn btn-outline-secondary">Retour</a>
     </div>
 </div>
 

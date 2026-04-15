@@ -22,7 +22,7 @@
         </button>
 
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="/rfid-cards/create" class="btn btn-primary">
+        <a href="{{ request.url_for('rfid_cards.create.index') }}" class="btn btn-primary">
             Nouvelle carte
         </a>
         {% endif %}
@@ -32,7 +32,7 @@
 <div class="collapse mb-4" id="filtersPanel">
     <div class="card filter-panel">
         <div class="card-body">
-            <form method="get" action="/rfid-cards" class="row g-3">
+            <form method="get" action="{{ request.url_for('rfid_cards.index') }}" class="row g-3">
                 <div class="col-md-6">
                     <label for="search" class="form-label">Recherche</label>
                     <input
@@ -59,7 +59,7 @@
 
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer</button>
-                    <a href="/rfid-cards" class="btn btn-outline-secondary">Réinitialiser</a>
+                    <a href="{{ request.url_for('rfid_cards.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
                 </div>
             </form>
         </div>
@@ -114,12 +114,12 @@
                             {{ card.issued_at.strftime("%d/%m/%Y %H:%M") if card.issued_at else "—" }}
                         </td>
                         <td class="text-end">
-                            <a href="/rfid-cards/{{ card.id }}" class="btn btn-sm btn-outline-info">
+                            <a href="{{ request.url_for('rfid_cards.show', rfid_card_id=card.id) }}" class="btn btn-sm btn-outline-info">
                                 Voir
                             </a>
 
                             {% if current_user.role and current_user.role.name == "admin" %}
-                            <a href="/rfid-cards/{{ card.id }}/edit" class="btn btn-sm btn-outline-primary">
+                            <a href="{{ request.url_for('rfid_cards.edit.show', rfid_card_id=card.id) }}" class="btn btn-sm btn-outline-primary">
                                 Modifier
                             </a>
                             {% endif %}
@@ -134,7 +134,7 @@
             <ul class="pagination pagination-modern mb-0">
                 <li class="page-item {% if not has_previous %}disabled{% endif %}">
                     <a class="page-link"
-                       href="/rfid-cards?page={{ previous_page }}&search={{ filters.search }}&status={{ filters.status }}">
+                       href="{{ request.url_for('rfid_cards.index') }}?page={{ previous_page }}&search={{ filters.search }}&status={{ filters.status }}">
                         Précédent
                     </a>
                 </li>
@@ -142,7 +142,7 @@
                 {% for page_number in page_numbers %}
                 <li class="page-item {% if page_number == current_page %}active{% endif %}">
                     <a class="page-link"
-                       href="/rfid-cards?page={{ page_number }}&search={{ filters.search }}&status={{ filters.status }}">
+                       href="{{ request.url_for('rfid_cards.index') }}?page={{ page_number }}&search={{ filters.search }}&status={{ filters.status }}">
                         {{ page_number }}
                     </a>
                 </li>
@@ -150,7 +150,7 @@
 
                 <li class="page-item {% if not has_next %}disabled{% endif %}">
                     <a class="page-link"
-                       href="/rfid-cards?page={{ next_page }}&search={{ filters.search }}&status={{ filters.status }}">
+                       href="{{ request.url_for('rfid_cards.index') }}?page={{ next_page }}&search={{ filters.search }}&status={{ filters.status }}">
                         Suivant
                     </a>
                 </li>

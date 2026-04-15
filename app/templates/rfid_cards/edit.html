@@ -9,13 +9,13 @@
         <p class="page-subtitle">Mets à jour les informations de la carte {{ card.uid }}.</p>
     </div>
     <div class="page-actions">
-        <a href="/rfid-cards/{{ card.id }}" class="btn btn-outline-secondary">Retour au détail</a>
+        <a href="{{ request.url_for('rfid_cards.show', rfid_card_id=card.id) }}" class="btn btn-outline-secondary">Retour au détail</a>
     </div>
 </div>
 
 <div class="card form-page-card">
     <div class="card-body">
-        <form method="post" action="/rfid-cards/{{ card.id }}/edit">
+        <form method="post" action="{{ request.url_for('rfid_cards.edit.store', rfid_card_id=card.id) }}">
             <div class="form-section">
                 <div class="form-section-title">Informations de la carte</div>
                 <div class="row g-3">
@@ -49,7 +49,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
-                <a href="/rfid-cards/{{ card.id }}" class="btn btn-outline-secondary">Annuler</a>
+                <a href="{{ request.url_for('rfid_cards.show', rfid_card_id=card.id) }}" class="btn btn-outline-secondary">Annuler</a>
             </div>
         </form>
     </div>

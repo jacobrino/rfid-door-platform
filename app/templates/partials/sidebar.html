@@ -8,27 +8,33 @@
     </div>
 
     <nav class="sidebar-nav">
-        <a href="/dashboard" class="sidebar-link {% if request.url.path == '/dashboard' %}active{% endif %}">
+        <a href="{{ request.url_for('dashboard.index') }}"
+           class="sidebar-link {% if request.url.path == request.url_for('dashboard.index').path %}active{% endif %}">
             Dashboard
         </a>
 
-        <a href="/authorized-users" class="sidebar-link {% if request.url.path.startswith('/authorized-users') %}active{% endif %}">
+        <a href="{{ request.url_for('authorized_users.index') }}"
+           class="sidebar-link {% if request.url.path.startswith(request.url_for('authorized_users.index').path) %}active{% endif %}">
             Utilisateurs autorisés
         </a>
 
-        <a href="/rfid-cards" class="sidebar-link {% if request.url.path.startswith('/rfid-cards') %}active{% endif %}">
+        <a href="{{ request.url_for('rfid_cards.index') }}"
+           class="sidebar-link {% if request.url.path.startswith(request.url_for('rfid_cards.index').path) %}active{% endif %}">
             Cartes RFID
         </a>
 
-        <a href="/assignments" class="sidebar-link {% if request.url.path.startswith('/assignments') %}active{% endif %}">
+        <a href="{{ request.url_for('assignments.index') }}"
+           class="sidebar-link {% if request.url.path.startswith(request.url_for('assignments.index').path) %}active{% endif %}">
             Affectations
         </a>
 
-        <a href="/devices" class="sidebar-link {% if request.url.path.startswith('/devices') %}active{% endif %}">
+        <a href="{{ request.url_for('devices.index') }}"
+           class="sidebar-link {% if request.url.path.startswith(request.url_for('devices.index').path) %}active{% endif %}">
             Appareils
         </a>
 
-        <a href="{{ request.url_for('access_log.index') }}" class="sidebar-link {% if request.url.path.startswith(request.url_for('access_log.index').path) %}active{% endif %}"">
+        <a href="{{ request.url_for('access_logs.index') }}"
+           class="sidebar-link {% if request.url.path.startswith(request.url_for('access_logs.index').path) %}active{% endif %}">
             Historique d’accès
         </a>
     </nav>
@@ -42,27 +48,33 @@
     <div class="offcanvas-body p-0">
         <div class="mobile-sidebar">
             <nav class="sidebar-nav p-3">
-                <a href="/dashboard" class="sidebar-link {% if request.url.path == '/dashboard' %}active{% endif %}">
+                <a href="{{ request.url_for('dashboard.index') }}"
+                   class="sidebar-link {% if request.url.path == request.url_for('dashboard.index').path %}active{% endif %}">
                     Dashboard
                 </a>
 
-                <a href="/authorized-users" class="sidebar-link {% if request.url.path.startswith('/authorized-users') %}active{% endif %}">
+                <a href="{{ request.url_for('authorized_users.index') }}"
+                   class="sidebar-link {% if request.url.path.startswith(request.url_for('authorized_users.index').path) %}active{% endif %}">
                     Utilisateurs autorisés
                 </a>
 
-                <a href="/rfid-cards" class="sidebar-link {% if request.url.path.startswith('/rfid-cards') %}active{% endif %}">
+                <a href="{{ request.url_for('rfid_cards.index') }}"
+                   class="sidebar-link {% if request.url.path.startswith(request.url_for('rfid_cards.index').path) %}active{% endif %}">
                     Cartes RFID
                 </a>
 
-                <a href="/assignments" class="sidebar-link {% if request.url.path.startswith('/assignments') %}active{% endif %}">
+                <a href="{{ request.url_for('assignments.index') }}"
+                   class="sidebar-link {% if request.url.path.startswith(request.url_for('assignments.index').path) %}active{% endif %}">
                     Affectations
                 </a>
 
-                <a href="/devices" class="sidebar-link {% if request.url.path.startswith('/devices') %}active{% endif %}">
+                <a href="{{ request.url_for('devices.index') }}"
+                   class="sidebar-link {% if request.url.path.startswith(request.url_for('devices.index').path) %}active{% endif %}">
                     Appareils
                 </a>
 
-                <a href="{{request.url_for('access_log.index')}}" class="sidebar-link {% if request.url.path.startswith(request.url_for('access_log.index').path) %}active{% endif %}">
+                <a href="{{ request.url_for('access_logs.index') }}"
+                   class="sidebar-link {% if request.url.path.startswith(request.url_for('access_logs.index').path) %}active{% endif %}">
                     Historique d’accès
                 </a>
             </nav>

@@ -9,13 +9,13 @@
         <p class="page-subtitle">Ajoute un nouveau badge RFID dans le système.</p>
     </div>
     <div class="page-actions">
-        <a href="/rfid-cards" class="btn btn-outline-secondary">Retour à la liste</a>
+        <a href="{{ request.url_for('rfid_cards.index') }}" class="btn btn-outline-secondary">Retour à la liste</a>
     </div>
 </div>
 
 <div class="card form-page-card">
     <div class="card-body">
-        <form method="post" action="/rfid-cards/create">
+        <form method="post" action="{{ request.url_for('rfid_cards.create.store') }}">
             <div class="form-section">
                 <div class="form-section-title">Informations de la carte</div>
                 <div class="row g-3">
@@ -49,7 +49,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <a href="/rfid-cards" class="btn btn-outline-secondary">Annuler</a>
+                <a href="{{ request.url_for('rfid_cards.index') }}" class="btn btn-outline-secondary">Annuler</a>
             </div>
         </form>
     </div>

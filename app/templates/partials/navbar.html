@@ -23,7 +23,7 @@
                 <small class="text-muted">{{ request.session.get('role_name', '—') }}</small>
             </div>
 
-            <a href="/logout" class="btn btn-danger btn-sm">
+            <a href="{{ request.url_for('auth.logout') }}" class="btn btn-danger btn-sm">
                 Déconnexion
             </a>
         </div>
