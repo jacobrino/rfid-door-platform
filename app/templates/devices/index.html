@@ -22,7 +22,7 @@
         </button>
 
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="/devices/create" class="btn btn-primary">
+        <a href="{{ request.url_for('devices.create.index') }}" class="btn btn-primary">
             Nouvel appareil
         </a>
         {% endif %}
@@ -32,7 +32,7 @@
 <div class="collapse mb-4" id="filtersPanel">
     <div class="card filter-panel">
         <div class="card-body">
-            <form method="get" action="/devices" class="row g-3">
+            <form method="get" action="{{ request.url_for('devices.index') }}" class="row g-3">
                 <div class="col-md-8">
                     <label for="search" class="form-label">Recherche</label>
                     <input
@@ -56,7 +56,7 @@
 
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer</button>
-                    <a href="/devices" class="btn btn-outline-secondary">Réinitialiser</a>
+                    <a href="{{ request.url_for('devices.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
                 </div>
             </form>
         </div>
@@ -105,12 +105,12 @@
                             {{ device.last_seen_at.strftime("%d/%m/%Y %H:%M") if device.last_seen_at else "—" }}
                         </td>
                         <td class="text-end">
-                            <a href="/devices/{{ device.id }}" class="btn btn-sm btn-outline-info">
+                            <a href="{{ request.url_for('devices.show', device_id=device.id) }}" class="btn btn-sm btn-outline-info">
                                 Voir
                             </a>
 
                             {% if current_user.role and current_user.role.name == "admin" %}
-                            <a href="/devices/{{ device.id }}/edit" class="btn btn-sm btn-outline-primary">
+                            <a href="{{ request.url_for('devices.edit.show', device_id=device.id) }}" class="btn btn-sm btn-outline-primary">
                                 Modifier
                             </a>
                             {% endif %}
@@ -125,7 +125,7 @@
             <ul class="pagination pagination-modern mb-0">
                 <li class="page-item {% if not has_previous %}disabled{% endif %}">
                     <a class="page-link"
-                       href="/devices?page={{ previous_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
+                       href="{{ request.url_for('devices.index') }}?page={{ previous_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
                         Précédent
                     </a>
                 </li>
@@ -133,7 +133,7 @@
                 {% for page_number in page_numbers %}
                 <li class="page-item {% if page_number == current_page %}active{% endif %}">
                     <a class="page-link"
-                       href="/devices?page={{ page_number }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
+                       href="{{ request.url_for('devices.index') }}?page={{ page_number }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
                         {{ page_number }}
                     </a>
                 </li>
@@ -141,7 +141,7 @@
 
                 <li class="page-item {% if not has_next %}disabled{% endif %}">
                     <a class="page-link"
-                       href="/devices?page={{ next_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
+                       href="{{ request.url_for('devices.index') }}?page={{ next_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
                         Suivant
                     </a>
                 </li>

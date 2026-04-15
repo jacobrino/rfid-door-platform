@@ -9,13 +9,13 @@
         <p class="page-subtitle">Mets à jour les informations de {{ device.device_name }}.</p>
     </div>
     <div class="page-actions">
-        <a href="/devices/{{ device.id }}" class="btn btn-outline-secondary">Retour au détail</a>
+        <a href="{{ request.url_for('devices.show', device_id=device.id) }}" class="btn btn-outline-secondary">Retour au détail</a>
     </div>
 </div>
 
 <div class="card form-page-card">
     <div class="card-body">
-        <form method="post" action="/devices/{{ device.id }}/edit">
+        <form method="post" action="{{ request.url_for('devices.edit.store', device_id=device.id) }}">
             <div class="form-section">
                 <div class="form-section-title">Identification de l’appareil</div>
                 <div class="row g-3">
@@ -42,7 +42,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
-                <a href="/devices/{{ device.id }}" class="btn btn-outline-secondary">Annuler</a>
+                <a href="{{ request.url_for('devices.show', device_id=device.id) }}" class="btn btn-outline-secondary">Annuler</a>
             </div>
         </form>
     </div>

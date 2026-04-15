@@ -9,7 +9,7 @@
         <p class="page-subtitle">Copie ce token maintenant. Il ne sera plus réaffiché ensuite.</p>
     </div>
     <div class="page-actions">
-        <a href="/devices/{{ device.id }}" class="btn btn-outline-secondary">Retour à l’appareil</a>
+        <a href="{{ request.url_for('devices.show', device_id=device.id) }}" class="btn btn-outline-secondary">Retour à l’appareil</a>
     </div>
 </div>
 
