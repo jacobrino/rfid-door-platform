@@ -6,6 +6,8 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from app.core.config import settings
+from fastapi.responses import JSONResponse
+
 
 from app.core.database import get_db
 from app.core.dependencies import require_admin, require_agent_or_admin
@@ -16,6 +18,12 @@ from app.services.rfid_card_service import (
     RfidCardServiceError,
     create_rfid_card_service,
     update_rfid_card_service,
+)
+
+from app.services.rfid_uid_capture_service import (
+    start_uid_capture,
+    get_uid_capture_status,
+    reset_uid_capture,
 )
 
 router = APIRouter()
@@ -287,3 +295,31 @@ def rfid_cards_update(
             },
             status_code=400,
         )
+    
+@router.post("/rfid-cards/uid-capture/start", name="rfid_cards.uid_capture.start")
+def rfid_cards_start_uid_capture(
+    current_user: StaffUser = Depends(require_admin),
+):
+    capture = start_uid_capture(timeout_seconds=15)
+    return JSONResponse({
+        "success": True,
+        "capture_id": capture["capture_id"],
+        "status": "waiting",
+        "expires_in": 15,
+    })
+
+
+@router.get("/rfid-cards/uid-capture/status/{capture_id}", name="rfid_cards.uid_capture.status")
+def rfid_cards_uid_capture_status(
+    capture_id: str,
+    current_user: StaffUser = Depends(require_admin),
+):
+    return JSONResponse(get_uid_capture_status(capture_id))
+
+
+@router.post("/rfid-cards/uid-capture/reset", name="rfid_cards.uid_capture.reset")
+def rfid_cards_uid_capture_reset(
+    current_user: StaffUser = Depends(require_admin),
+):
+    reset_uid_capture()
+    return JSONResponse({"success": True})

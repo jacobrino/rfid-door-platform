@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
+from app.api.esp32.enrollment import router as esp32_enrollment_router
+
 from app.core.config import settings
 from app.middleware.auth_redirect import AuthRedirectMiddleware
 
@@ -40,6 +42,7 @@ app.include_router(assignments_router)
 app.include_router(devices_router)
 app.include_router(esp32_access_router)
 app.include_router(access_logs_router)
+app.include_router(esp32_enrollment_router)
 
 
 @app.get("/")
