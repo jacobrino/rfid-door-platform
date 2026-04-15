@@ -320,7 +320,7 @@ def authorized_users_update(
         )
 
 
-@router.post("/authorized-users/{authorized_user_id}/delete")
+@router.post("/authorized-users/{authorized_user_id}/delete",name="authorized_users.delete")
 def authorized_users_delete(
     request: Request,
     authorized_user_id: int,

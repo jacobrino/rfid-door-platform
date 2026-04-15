@@ -85,29 +85,6 @@ def rfid_cards_index(
         },
     )
 
-@router.get("/rfid-cards/{rfid_card_id}", name="rfid_cards.show" ,response_class=HTMLResponse)
-def rfid_cards_show(
-    rfid_card_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user: StaffUser = Depends(require_agent_or_admin),
-):
-    card = get_rfid_card_by_id(db, rfid_card_id)
-
-    if not card:
-        return RedirectResponse(url=request.url_for('rfid_cards.index'), status_code=303)
-
-    return templates.TemplateResponse(
-        request=request,
-        name="rfid_cards/show.html",
-        context={
-            "request": request,
-            "card": card,
-            "current_user": current_user,
-        },
-    )
-
-
 @router.get("/rfid-cards/create", name="rfid_cards.create.index" ,response_class=HTMLResponse)
 def rfid_cards_create_page(
     request: Request,
@@ -185,6 +162,29 @@ def rfid_cards_store(
             },
             status_code=400,
         )
+
+@router.get("/rfid-cards/{rfid_card_id}", name="rfid_cards.show" ,response_class=HTMLResponse)
+def rfid_cards_show(
+    rfid_card_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: StaffUser = Depends(require_agent_or_admin),
+):
+    card = get_rfid_card_by_id(db, rfid_card_id)
+
+    if not card:
+        return RedirectResponse(url=request.url_for('rfid_cards.index'), status_code=303)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="rfid_cards/show.html",
+        context={
+            "request": request,
+            "card": card,
+            "current_user": current_user,
+        },
+    )
+
 
 @router.get("/rfid-cards/{rfid_card_id}/edit", name="rfid_cards.edit.show" , response_class=HTMLResponse)
 def rfid_cards_edit_page(
