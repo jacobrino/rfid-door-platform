@@ -14,10 +14,10 @@
 
     <div class="d-flex gap-2 flex-wrap">
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="/authorized-users/create" class="btn btn-primary">Nouvel utilisateur</a>
-        <a href="/rfid-cards/create" class="btn btn-outline-primary">Nouvelle carte</a>
-        <a href="/assignments/create" class="btn btn-outline-primary">Nouvelle affectation</a>
-        <a href="/devices/create" class="btn btn-outline-primary">Nouvel appareil</a>
+        <a href="{{request.url_for('authorized_users.create.index')}}" class="btn btn-primary">Nouvel utilisateur</a>
+        <a href="{{request.url_for('rfid_cards.create.index')}}" class="btn btn-outline-primary">Nouvelle carte</a>
+        <a href="{{request.url_for('assignments.create.index')}}" class="btn btn-outline-primary">Nouvelle affectation</a>
+        <a href="{{request.url_for('devices.create.index')}}" class="btn btn-outline-primary">Nouvel appareil</a>
         {% endif %}
     </div>
 </div>
@@ -78,7 +78,7 @@
             <div class="card-body">
                 <div class="metric-label">Utilisateurs actifs</div>
                 <div class="metric-value">{{ kpis.active_authorized_users }}</div>
-                <a href="/authorized-users" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
+                <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
             </div>
         </div>
     </div>
@@ -88,7 +88,7 @@
             <div class="card-body">
                 <div class="metric-label">Affectations actives</div>
                 <div class="metric-value">{{ kpis.active_assignments }}</div>
-                <a href="/assignments" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
+                <a href="{{request.url_for('assignments.index')}}" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
             </div>
         </div>
     </div>
@@ -98,7 +98,7 @@
             <div class="card-body">
                 <div class="metric-label">Cartes disponibles</div>
                 <div class="metric-value">{{ kpis.available_cards }}</div>
-                <a href="/rfid-cards" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
+                <a href="{{request.url_for('rfid_cards.index')}}" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
             </div>
         </div>
     </div>
@@ -108,7 +108,7 @@
             <div class="card-body">
                 <div class="metric-label">Appareils actifs</div>
                 <div class="metric-value">{{ kpis.active_devices }}</div>
-                <a href="/devices" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
+                <a href="{{request.url_for('devices.index')}}" class="btn btn-outline-primary btn-sm mt-3">Voir</a>
             </div>
         </div>
     </div>
@@ -169,7 +169,7 @@
                         <h5 class="card-title mb-1">Derniers événements</h5>
                         <p class="text-muted mb-0">Aperçu des derniers scans enregistrés.</p>
                     </div>
-                    <a href="{{ request.url_for('access_log.index') }}" class="btn btn-outline-primary btn-sm">Voir tout</a>
+                    <a href="{{ request.url_for('access_logs.index') }}" class="btn btn-outline-primary btn-sm">Voir tout</a>
                 </div>
 
                 {% if recent_events %}
@@ -219,7 +219,7 @@
                         <h5 class="card-title mb-1">Derniers refus</h5>
                         <p class="text-muted mb-0">Événements refusés les plus récents.</p>
                     </div>
-                    <a href="{{ request.url_for('access_log.index') }}?access_status=denied" class="btn btn-outline-danger btn-sm">Voir les refus</a>
+                    <a href="{{ request.url_for('access_logs.index') }}?access_status=denied" class="btn btn-outline-danger btn-sm">Voir les refus</a>
                 </div>
 
                 {% if recent_denied_events %}
