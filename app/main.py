@@ -48,5 +48,5 @@ app.include_router(esp32_enrollment_router)
 @app.get("/")
 def home(request: Request):
     if request.session.get("user_id"):
-        return RedirectResponse(url="/dashboard", status_code=303)
-    return RedirectResponse(url=request.url_for('login.index'), status_code=303)
+        return RedirectResponse(url=request.url_for('dashboard.index'), status_code=303)
+    return RedirectResponse(url=request.url_for('auth.login.index'), status_code=303)
