@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Form, Query, Request
+from fastapi import APIRouter, File, Depends, Form, Query, Request, UploadFile
+from app.utils.file_uploads import save_authorized_user_photo, delete_uploaded_file
+
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
@@ -111,12 +113,12 @@ def authorized_users_create_page(
     )
 
 
-@router.post("/authorized-users/create", name="authorized_users.create.store", response_class=HTMLResponse)
+@router.post("/authorized-users/create", response_class=HTMLResponse, name="authorized_users.store")
 def authorized_users_store(
     request: Request,
     first_name: str = Form(...),
     last_name: str = Form(...),
-    gender: str | None = Form(None),
+    gender: str = Form(...),
     phone: str | None = Form(None),
     email: str | None = Form(None),
     reference_code: str | None = Form(None),
@@ -124,44 +126,69 @@ def authorized_users_store(
     valid_until: str | None = Form(None),
     is_active: str | None = Form(None),
     notes: str | None = Form(None),
+    photo: UploadFile | None = File(None),
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_admin),
 ):
+    saved_path = None
+
     form_data = {
         "first_name": first_name,
         "last_name": last_name,
-        "gender": clean_optional_string(gender),
-        "phone": clean_optional_string(phone),
-        "email": clean_optional_string(email),
-        "reference_code": clean_optional_string(reference_code),
+        "gender": gender,
+        "phone": phone or "",
+        "email": email or "",
+        "reference_code": reference_code or "",
         "valid_from": valid_from or "",
         "valid_until": valid_until or "",
         "is_active": is_active == "on",
-        "notes": clean_optional_string(notes),
+        "notes": notes or "",
     }
 
     try:
+        saved_path = save_authorized_user_photo(photo)
+
         payload = AuthorizedUserCreate(
             first_name=first_name,
             last_name=last_name,
-            gender=clean_optional_string(gender),
-            phone=clean_optional_string(phone),
-            email=clean_optional_string(email),
-            reference_code=clean_optional_string(reference_code),
+            gender=gender,
+            phone=phone,
+            email=email,
+            reference_code=reference_code,
             valid_from=parse_optional_datetime(valid_from),
             valid_until=parse_optional_datetime(valid_until),
             is_active=is_active == "on",
-            notes=clean_optional_string(notes),
+            notes=notes,
+            path=saved_path,
         )
 
         create_authorized_user_service(db, payload)
 
-        return RedirectResponse(
-            url=request.url_for("authorized_users.index"),
-            status_code=303,
+        return RedirectResponse(url=request.url_for("authorized_users.index"), status_code=303)
+
+    except ValueError as e:
+        if saved_path:
+            delete_uploaded_file(saved_path)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="authorized_users/create.html",
+            context={
+                "request": request,
+                "error": str(e),
+                "form_data": form_data,
+                "current_user": current_user,
+                "show_sidebar": True,
+                "show_navbar": True,
+                "show_footer": True,
+            },
+            status_code=400,
         )
 
     except ValidationError as e:
+        if saved_path:
+            delete_uploaded_file(saved_path)
+
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
         return templates.TemplateResponse(
             request=request,
@@ -171,10 +198,17 @@ def authorized_users_store(
                 "error": error_message,
                 "form_data": form_data,
                 "current_user": current_user,
+                "show_sidebar": True,
+                "show_navbar": True,
+                "show_footer": True,
             },
             status_code=400,
         )
+
     except AuthorizedUserServiceError as e:
+        if saved_path:
+            delete_uploaded_file(saved_path)
+
         return templates.TemplateResponse(
             request=request,
             name="authorized_users/create.html",
@@ -183,10 +217,12 @@ def authorized_users_store(
                 "error": str(e),
                 "form_data": form_data,
                 "current_user": current_user,
+                "show_sidebar": True,
+                "show_navbar": True,
+                "show_footer": True,
             },
             status_code=400,
         )
-
 
 @router.get("/authorized-users/{authorized_user_id}/edit", name="authorized_users.edit", response_class=HTMLResponse)
 def authorized_users_edit_page(
@@ -229,13 +265,13 @@ def authorized_users_edit_page(
     )
 
 
-@router.post("/authorized-users/{authorized_user_id}/edit", name="authorized_users.edit.store", response_class=HTMLResponse)
+@router.post("/authorized-users/{authorized_user_id}/edit", response_class=HTMLResponse, name="authorized_users.update")
 def authorized_users_update(
     authorized_user_id: int,
     request: Request,
     first_name: str = Form(...),
     last_name: str = Form(...),
-    gender: str | None = Form(None),
+    gender: str = Form(...),
     phone: str | None = Form(None),
     email: str | None = Form(None),
     reference_code: str | None = Form(None),
@@ -243,82 +279,110 @@ def authorized_users_update(
     valid_until: str | None = Form(None),
     is_active: str | None = Form(None),
     notes: str | None = Form(None),
+    photo: UploadFile | None = File(None),
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_admin),
 ):
     user = get_authorized_user_by_id(db, authorized_user_id)
 
     if not user:
-        return RedirectResponse(
-            url=request.url_for("authorized_users.index"),
-            status_code=303,
-        )
+        return RedirectResponse(url=request.url_for("authorized_users.index"), status_code=303)
+
+    old_path = user.path
+    new_saved_path = None
 
     form_data = {
         "first_name": first_name,
         "last_name": last_name,
-        "gender": clean_optional_string(gender),
-        "phone": clean_optional_string(phone),
-        "email": clean_optional_string(email),
-        "reference_code": clean_optional_string(reference_code),
+        "gender": gender,
+        "phone": phone or "",
+        "email": email or "",
+        "reference_code": reference_code or "",
         "valid_from": valid_from or "",
         "valid_until": valid_until or "",
         "is_active": is_active == "on",
-        "notes": clean_optional_string(notes),
+        "notes": notes or "",
     }
 
     try:
+        if photo and photo.filename:
+            new_saved_path = save_authorized_user_photo(photo)
+
         payload = AuthorizedUserUpdate(
             first_name=first_name,
             last_name=last_name,
-            gender=clean_optional_string(gender),
-            phone=clean_optional_string(phone),
-            email=clean_optional_string(email),
-            reference_code=clean_optional_string(reference_code),
+            gender=gender,
+            phone=phone,
+            email=email,
+            reference_code=reference_code,
             valid_from=parse_optional_datetime(valid_from),
             valid_until=parse_optional_datetime(valid_until),
             is_active=is_active == "on",
-            notes=clean_optional_string(notes),
+            notes=notes,
+            path=new_saved_path if new_saved_path else old_path,
         )
 
         update_authorized_user_service(db, authorized_user_id, payload)
 
+        if new_saved_path and old_path:
+            delete_uploaded_file(old_path)
+
         return RedirectResponse(
-            url=request.url_for(
-                "authorized_users.show",
-                authorized_user_id=authorized_user_id,
-            ),
+            url=request.url_for("authorized_users.show", authorized_user_id=authorized_user_id),
             status_code=303,
         )
 
+    except ValueError as e:
+        if new_saved_path:
+            delete_uploaded_file(new_saved_path)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="authorized_users/edit.html",
+            context={
+                "request": request,
+                "error": str(e),
+                "form_data": form_data,
+                "user": user,
+                "current_user": current_user,
+            },
+            status_code=400,
+        )
+
     except ValidationError as e:
+        if new_saved_path:
+            delete_uploaded_file(new_saved_path)
+
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
         return templates.TemplateResponse(
             request=request,
             name="authorized_users/edit.html",
             context={
                 "request": request,
-                "user": user,
                 "error": error_message,
                 "form_data": form_data,
-                "current_user": current_user,
-            },
-            status_code=400,
-        )
-    except AuthorizedUserServiceError as e:
-        return templates.TemplateResponse(
-            request=request,
-            name="authorized_users/edit.html",
-            context={
-                "request": request,
                 "user": user,
-                "error": str(e),
-                "form_data": form_data,
                 "current_user": current_user,
             },
             status_code=400,
         )
 
+    except AuthorizedUserServiceError as e:
+        if new_saved_path:
+            delete_uploaded_file(new_saved_path)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="authorized_users/edit.html",
+            context={
+                "request": request,
+                "error": str(e),
+                "form_data": form_data,
+                "user": user,
+                "current_user": current_user,
+            },
+            status_code=400,
+        )
 
 @router.post("/authorized-users/{authorized_user_id}/delete",name="authorized_users.delete")
 def authorized_users_delete(

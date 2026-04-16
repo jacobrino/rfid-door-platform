@@ -7,3 +7,7 @@ venv/
 .vscode/
 .pytest_cache/
 .mypy_cache/
+
+app/static/uploads/**
+!app/static/uploads/.gitkeep
+!app/static/uploads/authorized_users/.gitkeep

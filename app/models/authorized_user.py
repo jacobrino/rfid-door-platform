@@ -13,7 +13,7 @@ class AuthorizedUser(Base):
 
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    gender: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    gender: Mapped[str] = mapped_column(String(20), nullable=False)
 
     phone: Mapped[str | None] = mapped_column(String(30), unique=True, nullable=True, index=True)
     email: Mapped[str | None] = mapped_column(String(150), unique=True, nullable=True, index=True)
@@ -24,6 +24,8 @@ class AuthorizedUser(Base):
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    path: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(

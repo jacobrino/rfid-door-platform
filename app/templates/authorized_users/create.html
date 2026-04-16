@@ -13,14 +13,13 @@
         <p class="page-subtitle">Ajoute une nouvelle personne autorisée à accéder à la porte.</p>
     </div>
     <div class="page-actions">
-        <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-secondary">Retour à la liste</a>
+        <a href="{{ request.url_for('authorized_users.index') }}" class="btn btn-outline-secondary">Retour à la liste</a>
     </div>
 </div>
 
-
 <div class="card form-page-card">
     <div class="card-body">
-        <form method="post" action="{{request.url_for('authorized_users.create.store')}}">
+        <form method="post" action="{{ request.url_for('authorized_users.store') }}" enctype="multipart/form-data">
             <div class="form-section">
                 <div class="form-section-title">Informations personnelles</div>
                 <div class="row g-3">
@@ -32,6 +31,7 @@
                         <label for="last_name" class="form-label">Nom</label>
                         <input type="text" class="form-control" id="last_name" name="last_name" value="{{ form_data.get('last_name', '') }}" required>
                     </div>
+
                     <div class="col-md-4">
                         <label for="gender" class="form-label">Genre</label>
                         <select class="form-select" id="gender" name="gender" required>
@@ -40,6 +40,7 @@
                             <option value="Femme" {% if form_data.get('gender') == 'Femme' %}selected{% endif %}>Femme</option>
                         </select>
                     </div>
+
                     <div class="col-md-4">
                         <label for="phone" class="form-label">Téléphone</label>
                         <input
@@ -52,14 +53,16 @@
                             pattern="^\+[0-9]{8,15}$"
                             inputmode="tel"
                         >
-                        <div class="form-text">
-                            Format attendu : + suivi de 8 à 15 chiffres.
-                        </div>
                     </div>
 
                     <div class="col-md-4">
                         <label for="email" class="form-label">E-mail</label>
                         <input type="email" class="form-control" id="email" name="email" value="{{ form_data.get('email', '') }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="photo" class="form-label">Photo</label>
+                        <input type="file" class="form-control" id="photo" name="photo" accept="image/png,image/jpeg,image/webp">
                     </div>
                 </div>
             </div>
@@ -73,24 +76,13 @@
                     </div>
                     <div class="col-md-3">
                         <label for="valid_from" class="form-label">Valide à partir de</label>
-                        <input
-                            type="datetime-local"
-                            class="form-control"
-                            id="valid_from"
-                            name="valid_from"
-                            value="{{ form_data.get('valid_from', default_valid_from) }}"
-                        >
+                        <input type="datetime-local" class="form-control" id="valid_from" name="valid_from" value="{{ form_data.get('valid_from', default_valid_from) }}">
                     </div>
                     <div class="col-md-3">
                         <label for="valid_until" class="form-label">Valide jusqu’à</label>
-                        <input
-                            type="datetime-local"
-                            class="form-control"
-                            id="valid_until"
-                            name="valid_until"
-                            value="{{ form_data.get('valid_until', default_valid_until) }}"
-                        >
+                        <input type="datetime-local" class="form-control" id="valid_until" name="valid_until" value="{{ form_data.get('valid_until', default_valid_until) }}">
                     </div>
+
                     <div class="col-12">
                         <div class="form-check mt-2">
                             <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if form_data.get('is_active', True) %}checked{% endif %}>
@@ -107,7 +99,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-secondary">Annuler</a>
+                <a href="{{ request.url_for('authorized_users.index') }}" class="btn btn-outline-secondary">Annuler</a>
             </div>
         </form>
     </div>

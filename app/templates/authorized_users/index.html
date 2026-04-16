@@ -24,7 +24,7 @@
         </button>
 
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="{{request.url_for('authorized_users.create.index')}}" class="btn btn-primary">
+        <a href="{{ request.url_for('authorized_users.create.index') }}" class="btn btn-primary">
             Nouvel utilisateur
         </a>
         {% endif %}
@@ -34,7 +34,7 @@
 <div class="collapse mb-4" id="filtersPanel">
     <div class="card filter-panel">
         <div class="card-body">
-            <form method="get" action="{{request.url_for('authorized_users.index')}}" class="row g-3">
+            <form method="get" action="{{ request.url_for('authorized_users.index') }}" class="row g-3">
                 <div class="col-md-4">
                     <label for="search" class="form-label">Recherche</label>
                     <input
@@ -71,7 +71,7 @@
 
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer</button>
-                    <a href="{{request.url_for('authorized_users.index')}}" class="btn btn-outline-secondary">Réinitialiser</a>
+                    <a href="{{ request.url_for('authorized_users.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
                 </div>
             </form>
         </div>
@@ -95,6 +95,7 @@
             <table class="table table-modern align-middle">
                 <thead>
                     <tr>
+                        <th>Photo</th>
                         <th>Nom complet</th>
                         <th>Référence</th>
                         <th>Contact</th>
@@ -106,13 +107,33 @@
                 <tbody>
                     {% for user in users %}
                     <tr>
+                        <td style="width: 80px;">
+                            {% if user.path %}
+                                <img
+                                    src="{{ request.url_for('static', path=user.path) }}"
+                                    alt="Photo de {{ user.first_name }} {{ user.last_name }}"
+                                    class="rounded-circle border"
+                                    style="width: 90px; height: 90px; object-fit: cover;"
+                                >
+                            {% else %}
+                                <div
+                                    class="rounded-circle border d-flex align-items-center justify-content-center bg-light text-muted fw-bold"
+                                    style="width: 90px; height: 90px;"
+                                >
+                                    {{ (user.first_name[0] if user.first_name else '') ~ (user.last_name[0] if user.last_name else '') }}
+                                </div>
+                            {% endif %}
+                        </td>
+
                         <td>
                             <div class="fw-semibold">{{ user.first_name }} {{ user.last_name }}</div>
                             {% if user.gender %}
                             <small class="text-muted">{{ user.gender }}</small>
                             {% endif %}
                         </td>
+
                         <td>{{ user.reference_code or "—" }}</td>
+
                         <td>
                             {% if user.email %}
                             <div>{{ user.email }}</div>
@@ -124,6 +145,7 @@
                             <span class="text-muted">—</span>
                             {% endif %}
                         </td>
+
                         <td>
                             {% if user.valid_from or user.valid_until %}
                                 <div>
@@ -138,6 +160,7 @@
                                 <span class="text-muted">Aucune limitation</span>
                             {% endif %}
                         </td>
+
                         <td>
                             {% if user.is_active %}
                             <span class="badge rounded-pill text-bg-success">Actif</span>
@@ -145,6 +168,7 @@
                             <span class="badge rounded-pill text-bg-secondary">Inactif</span>
                             {% endif %}
                         </td>
+
                         <td class="text-end">
                             <a href="/authorized-users/{{ user.id }}" class="btn btn-sm btn-outline-info">
                                 Voir
