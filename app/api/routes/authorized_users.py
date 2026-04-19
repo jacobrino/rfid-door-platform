@@ -601,11 +601,9 @@ async def authorized_user_qr(
     return StreamingResponse(buffer, media_type="image/png")
 
 
-
 @router.get("/authorized-users/{authorized_user_id}/download-card", name="authorized_users.download_card")
 async def download_card(
     authorized_user_id: int,
-    format: str = Query("cr80"),
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_agent_or_admin),
 ):
@@ -633,12 +631,11 @@ async def download_card(
     def build_qr_payload() -> dict:
         return {
             "id": user.id,
+            "reference_code": user.reference_code,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "gender": user.gender,
             "phone": user.phone,
             "email": user.email,
-            "reference_code": user.reference_code,
             "valid_from": user.valid_from.isoformat() if user.valid_from else None,
             "valid_until": user.valid_until.isoformat() if user.valid_until else None,
             "is_active": user.is_active,
@@ -655,94 +652,57 @@ async def download_card(
         qr_buffer.seek(0)
         return qr_buffer
 
-    if format == "cr80":
-        page_width = 85.60 * mm
-        page_height = 53.98 * mm
-        filename = f"card_{user.id}_cr80.pdf"
-        card_w = page_width
-        card_h = page_height
-        card_x = 0
-        card_y = 0
-        radius = 4 * mm
-        header_h = 10 * mm
-        photo_w = 18 * mm
-        photo_h = 18 * mm
-        qr_size = 13 * mm
-        pad = 3.5 * mm
-        title_size = 8.8
-        name_size = 10.5
-        text_size = 6.4
-        small_size = 5.8
+    # CR80 uniquement
+    page_width = 85.60 * mm
+    page_height = 53.98 * mm
+    filename = f"card_{user.id}_cr80.pdf"
 
-    elif format == "badge":
-        page_width = 100 * mm
-        page_height = 70 * mm
-        filename = f"card_{user.id}_badge.pdf"
-        card_w = page_width
-        card_h = page_height
-        card_x = 0
-        card_y = 0
-        radius = 5 * mm
-        header_h = 12 * mm
-        photo_w = 24 * mm
-        photo_h = 24 * mm
-        qr_size = 18 * mm
-        pad = 4.5 * mm
-        title_size = 11
-        name_size = 13
-        text_size = 8
-        small_size = 7
+    card_w = page_width
+    card_h = page_height
+    card_x = 0
+    card_y = 0
 
-    elif format == "a4":
-        page_width, page_height = A4
-        filename = f"card_{user.id}_a4.pdf"
-        card_w = 120 * mm
-        card_h = 76 * mm
-        card_x = (page_width - card_w) / 2
-        card_y = (page_height - card_h) / 2
-        radius = 6 * mm
-        header_h = 13 * mm
-        photo_w = 28 * mm
-        photo_h = 28 * mm
-        qr_size = 21 * mm
-        pad = 6 * mm
-        title_size = 14
-        name_size = 17
-        text_size = 10
-        small_size = 8.5
+    radius = 4 * mm
+    header_h = 10 * mm
+    photo_w = 18 * mm
+    photo_h = 18 * mm
+    qr_size = 13 * mm
+    pad = 3.5 * mm
 
-    else:
-        raise HTTPException(status_code=400, detail="Format invalide")
+    title_size = 8.8
+    name_size = 10.5
+    text_size = 6.4
+    small_size = 5.8
 
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=(page_width, page_height))
 
+    # Fond général
     pdf.setFillColor(colors.HexColor("#f3f4f6"))
     pdf.rect(0, 0, page_width, page_height, fill=1, stroke=0)
 
+    # Carte
     pdf.setFillColor(colors.white)
     pdf.roundRect(card_x, card_y, card_w, card_h, radius, fill=1, stroke=0)
 
-    # Header
+    # Header bleu
     pdf.setFillColor(colors.HexColor("#1664ea"))
     pdf.roundRect(card_x, card_y + card_h - header_h, card_w, header_h, radius, fill=1, stroke=0)
     pdf.rect(card_x, card_y + card_h - header_h, card_w, header_h / 2, fill=1, stroke=0)
 
     pdf.setFillColor(colors.white)
     pdf.setFont("Helvetica-Bold", title_size)
-    pdf.drawString(card_x + pad, card_y + card_h - header_h + (header_h * 0.38), "UTILISATEUR AUTORISÉ")
+    # pdf.drawString(
+    #     card_x + pad,
+    #     card_y + card_h - header_h + (header_h * 0.38),
+    #     "UTILISATEUR AUTORISÉ"
+    # )
 
-    # Petit pictogramme
-    icon_size = 5 * mm if format != "a4" else 7 * mm
-    icon_x = card_x + card_w - pad - icon_size
-    icon_y = card_y + card_h - header_h + (header_h - icon_size) / 2
-    pdf.setFillColor(colors.HexColor("#f59e0b"))
-    pdf.roundRect(icon_x, icon_y, icon_size, icon_size, 1 * mm, fill=1, stroke=0)
-    pdf.setFillColor(colors.white)
-    bar_w = icon_size / 7
-    pdf.rect(icon_x + 1.0 * mm, icon_y + 1.0 * mm, bar_w, 2.2 * mm, fill=1, stroke=0)
-    pdf.rect(icon_x + 2.0 * mm, icon_y + 1.0 * mm, bar_w, 3.4 * mm, fill=1, stroke=0)
-    pdf.rect(icon_x + 3.0 * mm, icon_y + 1.0 * mm, bar_w, 4.8 * mm, fill=1, stroke=0)
+    pdf.drawCentredString(
+        card_x + (card_w / 2),
+        card_y + card_h - header_h + (header_h * 0.38),
+        "BADGE D'ACCES AU SYSTEME"
+    )
 
     # Photo
     photo_x = card_x + pad
@@ -757,6 +717,7 @@ async def download_card(
             with open(photo_path, "rb") as f:
                 img_buffer = io.BytesIO(f.read())
                 img_buffer.seek(0)
+
             pdf.drawImage(
                 ImageReader(img_buffer),
                 photo_x,
@@ -773,8 +734,8 @@ async def download_card(
         pdf.setStrokeColor(colors.HexColor("#d1d5db"))
         pdf.roundRect(photo_x, photo_y, photo_w, photo_h, 2 * mm, fill=0, stroke=1)
 
-    # Bloc infos principal
-    info_x = photo_x + photo_w + (4 * mm if format != "a4" else 6 * mm)
+    # Bloc infos
+    info_x = photo_x + photo_w + 4 * mm
     info_top_y = card_y + card_h - header_h - pad
 
     pdf.setFillColor(colors.HexColor("#111827"))
@@ -785,81 +746,57 @@ async def download_card(
     pdf.setFillColor(colors.HexColor("#6b7280"))
     pdf.drawString(info_x, info_top_y - 7.5 * mm, user.gender or "Utilisateur")
 
-    label_gap = 5.5 * mm if format != "a4" else 7 * mm
+    label_gap = 5.5 * mm
     start_y = info_top_y - 13 * mm
 
     def draw_label_value(y, label, value):
         pdf.setFont("Helvetica-Bold", text_size)
         pdf.setFillColor(colors.HexColor("#111827"))
         pdf.drawString(info_x, y, f"{label} :")
+
         label_width = pdf.stringWidth(f"{label} :", "Helvetica-Bold", text_size)
+
         pdf.setFont("Helvetica", text_size)
         pdf.setFillColor(colors.HexColor("#1f2937"))
         pdf.drawString(info_x + label_width + 1.5 * mm, y, value)
 
     draw_label_value(start_y, "Tél", user.phone or "—")
     draw_label_value(start_y - label_gap, "Email", (user.email or "—")[:28])
-    # draw_label_value(start_y - (label_gap * 2), "Statut", "Actif" if user.is_active else "Inactif")
+    draw_label_value(start_y - (label_gap * 2), "Statut", "Actif" if user.is_active else "Inactif")
 
-    # Ligne horizontale de séparation
-        # Ligne horizontale de séparation
-    divider_y = card_y + 18 * mm if format == "cr80" else card_y + 22 * mm if format == "badge" else card_y + 28 * mm
-    pdf.setStrokeColor(colors.HexColor("#d1d5db"))
-    pdf.setLineWidth(0.4)
-    pdf.line(card_x + pad, divider_y, card_x + card_w - pad, divider_y)
-
-    # QR code en bas a droite
-    qr_buffer = make_qr_buffer()
-    qr_x = card_x + card_w - pad - qr_size
-    qr_y = card_y + pad
-
-    pdf.setFillColor(colors.HexColor("#f8fafc"))
-    pdf.roundRect(qr_x - 1.5 * mm, qr_y - 1.5 * mm, qr_size + 3 * mm, qr_size + 3 * mm, 2 * mm, fill=1, stroke=0)
-    pdf.setStrokeColor(colors.HexColor("#d1d5db"))
-    pdf.roundRect(qr_x - 1.5 * mm, qr_y - 1.5 * mm, qr_size + 3 * mm, qr_size + 3 * mm, 2 * mm, fill=0, stroke=1)
-    pdf.drawImage(ImageReader(qr_buffer), qr_x, qr_y, width=qr_size, height=qr_size, mask="auto")
+    # Ligne de séparation
+    divider_y = card_y + 18 * mm
+    # pdf.setStrokeColor(colors.HexColor("#d1d5db"))
+    # pdf.setLineWidth(0.4)
+    # pdf.line(card_x + pad, divider_y, card_x + card_w - pad, divider_y)
 
     # Bloc bas gauche
     bottom_left_x = card_x + pad
     bottom_top_y = divider_y - 4.5 * mm
 
-    status_value = "Actif" if user.is_active else "Inactif"
     valid_from_str = user.valid_from.strftime("%d/%m/%Y %H:%M") if user.valid_from else "—"
     valid_until_str = user.valid_until.strftime("%d/%m/%Y %H:%M") if user.valid_until else "—"
 
-    # Statut
-    pdf.setFont("Helvetica-Bold", text_size)
-    pdf.setFillColor(colors.HexColor("#111827"))
-    pdf.drawString(bottom_left_x, bottom_top_y, "Statut :")
-
-    pdf.setFont("Helvetica", text_size)
-    pdf.drawString(bottom_left_x + 16 * mm, bottom_top_y, status_value)
-
-    # Code
     pdf.setFillColor(colors.HexColor("#2563eb"))
     pdf.setFont("Helvetica-Bold", text_size + 0.2)
-    pdf.drawString(bottom_left_x, bottom_top_y - 6 * mm, f"Code : {user.reference_code or '—'}")
+    pdf.drawString(bottom_left_x, bottom_top_y, f"Matricule : {user.reference_code or '—'}")
 
-    # Validité
     pdf.setFillColor(colors.HexColor("#111827"))
 
     pdf.setFont("Helvetica-Bold", small_size)
-    pdf.drawString(bottom_left_x, bottom_top_y - 12 * mm, "Valide du :")
+    pdf.drawString(bottom_left_x, bottom_top_y - 6 * mm, "Valide du :")
     pdf.setFont("Helvetica", small_size)
-    pdf.drawString(bottom_left_x + 18 * mm, bottom_top_y - 12 * mm, valid_from_str)
+    pdf.drawString(bottom_left_x + 18 * mm, bottom_top_y - 6 * mm, valid_from_str)
 
     pdf.setFont("Helvetica-Bold", small_size)
-    pdf.drawString(bottom_left_x, bottom_top_y - 17.5 * mm, "Au :")
+    pdf.drawString(bottom_left_x, bottom_top_y - 11.5 * mm, "Au :")
     pdf.setFont("Helvetica", small_size)
-    pdf.drawString(bottom_left_x + 18 * mm, bottom_top_y - 17.5 * mm, valid_until_str)
+    pdf.drawString(bottom_left_x + 18 * mm, bottom_top_y - 11.5 * mm, valid_until_str)
 
-    # QR code en bas a droite, SOUS la ligne horizontale
+    # QR code en bas à droite
     qr_buffer = make_qr_buffer()
     qr_x = card_x + card_w - pad - qr_size
-    qr_y = divider_y - qr_size - 3 * mm
-
-    if qr_y < card_y + pad:
-        qr_y = card_y + pad
+    qr_y = card_y + pad
 
     pdf.setFillColor(colors.HexColor("#f8fafc"))
     pdf.roundRect(qr_x - 1.5 * mm, qr_y - 1.5 * mm, qr_size + 3 * mm, qr_size + 3 * mm, 2 * mm, fill=1, stroke=0)

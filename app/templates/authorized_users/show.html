@@ -139,17 +139,21 @@
         padding: 4px;
     }
 
-    .download-card-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 1rem;
+    .download-card-link-wrap {
+        margin-top: 10px;
+        text-align: center;
     }
 
-    .card-format-note {
+    .download-card-link {
         font-size: 13px;
-        color: #6b7280;
-        margin-top: 8px;
+        color: #0d6efd;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .download-card-link:hover {
+        text-decoration: underline;
+        color: #0b5ed7;
     }
 
     @media (max-width: 768px) {
@@ -165,130 +169,102 @@
         <h2 class="page-title">{{ user.first_name }} {{ user.last_name }}</h2>
         <p class="page-subtitle">Détail complet d’un utilisateur autorisé.</p>
     </div>
-    <div class="page-actions">
+
+    <div class="page-actions d-flex flex-wrap gap-2">
         {% if current_user.role and current_user.role.name == "admin" %}
-        <a href="{{ request.url_for('authorized_users.edit', authorized_user_id=user.id) }}" class="btn btn-primary">Modifier</a>
+        <a
+            href="{{ request.url_for('authorized_users.edit', authorized_user_id=user.id) }}"
+            class="btn btn-primary"
+        >
+            Modifier
+        </a>
         {% endif %}
-        <a href="{{ request.url_for('authorized_users.index') }}" class="btn btn-outline-secondary">Retour</a>
+
+        <a
+            href="{{ request.url_for('authorized_users.index') }}"
+            class="btn btn-outline-secondary"
+        >
+            Retour
+        </a>
     </div>
 </div>
 
 <div class="card detail-page-card">
     <div class="card-body">
 
-        <div class="detail-section">
-            <div class="detail-section-title">Carte d’identification</div>
-
-            <div class="id-card-wrapper">
-                <div class="id-card">
-                    <div class="id-card-header">
-                        <div class="id-card-header-title">Utilisateur autorisé</div>
-                        <div style="font-size: 22px;">📶</div>
-                    </div>
-
-                    <div class="id-card-body">
-                        <div class="id-card-main">
-                            {% if user.path %}
-                                <img
-                                    src="{{ request.url_for('static', path=user.path) }}"
-                                    alt="Photo de {{ user.first_name }} {{ user.last_name }}"
-                                    class="id-card-photo"
-                                >
-                            {% else %}
-                                <div class="id-card-photo-placeholder">
-                                    {{ (user.first_name[:1] if user.first_name else '') ~ (user.last_name[:1] if user.last_name else '') }}
-                                </div>
-                            {% endif %}
-
-                            <div class="id-card-info">
-                                <div class="id-card-name">{{ user.first_name }} {{ user.last_name }}</div>
-                                <div class="id-card-subtitle">
-                                    {{ user.gender or "Utilisateur" }}
-                                </div>
-
-                                <div class="id-card-line"><strong>Tél :</strong> {{ user.phone or "—" }}</div>
-                                <div class="id-card-line"><strong>Email :</strong> {{ user.email or "—" }}</div>
-                                <div class="id-card-line"><strong>Statut :</strong> {{ "Actif" if user.is_active else "Inactif" }}</div>
-                            </div>
-                        </div>
-
-                        <div class="id-card-bottom">
-                            <div class="id-card-meta">
-                                <div class="id-card-code">
-                                    Code : {{ user.reference_code or "—" }}
-                                </div>
-                                <div class="id-card-validity">
-                                    <div>
-                                        <strong>Valide du :</strong>
-                                        {{ user.valid_from.strftime("%d/%m/%Y %H:%M") if user.valid_from else "—" }}
-                                    </div>
-                                    <div>
-                                        <strong>Au :</strong>
-                                        {{ user.valid_until.strftime("%d/%m/%Y %H:%M") if user.valid_until else "—" }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="id-card-qr">
-                                <img
-                                    src="{{ request.url_for('authorized_users.qr', authorized_user_id=user.id) }}"
-                                    alt="QR Code {{ user.first_name }} {{ user.last_name }}"
-                                >
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="download-card-actions">
-                <a
-                    href="{{ request.url_for('authorized_users.download_card', authorized_user_id=user.id) }}?format=cr80"
-                    class="btn btn-primary"
-                >
-                    Télécharger carte RFID
-                </a>
-
-                <a
-                    href="{{ request.url_for('authorized_users.download_card', authorized_user_id=user.id) }}?format=a4"
-                    class="btn btn-outline-primary"
-                >
-                    Télécharger version A4
-                </a>
-
-                <a
-                    href="{{ request.url_for('authorized_users.download_card', authorized_user_id=user.id) }}?format=badge"
-                    class="btn btn-outline-primary"
-                >
-                    Télécharger badge bureau
-                </a>
-            </div>
-
-            <div class="card-format-note">
-                Formats disponibles : carte RFID (CR80), badge bureau, impression A4.
-            </div>
-        </div>
-
+     
         <div class="detail-section">
             <div class="detail-section-title">Photo</div>
             {% if user.path %}
-            <img src="{{ request.url_for('static', path=user.path) }}" alt="Photo utilisateur" class="img-thumbnail" style="max-width: 200px;">
+            <img
+                src="{{ request.url_for('static', path=user.path) }}"
+                alt="Photo utilisateur"
+                class="img-thumbnail"
+                style="max-width: 200px;"
+            >
             {% else %}
             <div class="detail-note-box">Aucune photo.</div>
             {% endif %}
         </div>
 
         <div class="detail-section">
-            <div class="detail-section-title">Informations personnelles</div>
+            <div class="detail-section-title">Informations personnelles
+                <a href="{{ request.url_for('authorized_users.download_card', authorized_user_id=user.id) }}"
+                    class="download-card-link">
+                    Télécharger le badge PDF
+                </a>
+            </div>
             <div class="detail-grid">
-                <div class="detail-item"><span class="detail-item-label">Prénom</span><div class="detail-item-value">{{ user.first_name }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">Nom</span><div class="detail-item-value">{{ user.last_name }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">Genre</span><div class="detail-item-value">{{ user.gender }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">Téléphone</span><div class="detail-item-value">{{ user.phone or "—" }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">E-mail</span><div class="detail-item-value">{{ user.email or "—" }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">Code de référence</span><div class="detail-item-value">{{ user.reference_code or "—" }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">Valide du</span><div class="detail-item-value">{{ user.valid_from.strftime("%d/%m/%Y %H:%M") if user.valid_from else "—" }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">Valide au</span><div class="detail-item-value">{{ user.valid_until.strftime("%d/%m/%Y %H:%M") if user.valid_until else "—" }}</div></div>
-                <div class="detail-item"><span class="detail-item-label">Statut</span><div class="detail-item-value">{{ "Actif" if user.is_active else "Inactif" }}</div></div>
+                <div class="detail-item">
+                    <span class="detail-item-label">Prénom</span>
+                    <div class="detail-item-value">{{ user.first_name }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">Nom</span>
+                    <div class="detail-item-value">{{ user.last_name }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">Genre</span>
+                    <div class="detail-item-value">{{ user.gender }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">Téléphone</span>
+                    <div class="detail-item-value">{{ user.phone or "—" }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">E-mail</span>
+                    <div class="detail-item-value">{{ user.email or "—" }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">Code de référence</span>
+                    <div class="detail-item-value">{{ user.reference_code or "—" }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">Valide du</span>
+                    <div class="detail-item-value">
+                        {{ user.valid_from.strftime("%d/%m/%Y %H:%M") if user.valid_from else "—" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">Valide au</span>
+                    <div class="detail-item-value">
+                        {{ user.valid_until.strftime("%d/%m/%Y %H:%M") if user.valid_until else "—" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-item-label">Statut</span>
+                    <div class="detail-item-value">
+                        {{ "Actif" if user.is_active else "Inactif" }}
+                    </div>
+                </div>
             </div>
         </div>
 
