@@ -17,16 +17,23 @@
                             </p>
                         </div>
 
+                        {% include "partials/alerts.html" %}
+
                         <form method="post" action="{{request.url_for('auth.login.index')}}" novalidate>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Adresse e-mail</label>
+                                
                                 <input
                                     type="email"
                                     class="form-control form-control-lg"
                                     id="email"
                                     name="email"
                                     placeholder="email@rfid.local"
+                                    required
+                                    pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+                                    title="Veuillez entrer une adresse e-mail valide"
                                 >
+
                             </div>
 
                             <div class="mb-4">
