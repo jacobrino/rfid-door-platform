@@ -1,6 +1,6 @@
 # RFID Door Platform
 
-Plateforme web de gestion de contrôle d'accès RFID, construite avec **FastAPI**, **Jinja2**, **SQLAlchemy** et **MySQL**, avec intégration d'appareils **ESP32** pour la lecture des badges RFID.
+Plateforme web de gestion de contrôle d'accès RFID, construite avec **FastAPI**, **Jinja2**, **SQLAlchemy** et **MySQL/PostgreSQL**, avec intégration d'appareils **ESP32** pour la lecture des badges RFID.
 
 ## Objectif du projet
 
