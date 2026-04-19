@@ -31,3 +31,6 @@ class Esp32AccessCheckResponse(BaseModel):
     assignment_id: int | None = None
     card_id: int | None = None
     scanned_at: datetime
+
+class DeviceEchoPayload(BaseModel):
+    device_code: str
