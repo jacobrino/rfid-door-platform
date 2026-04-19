@@ -49,6 +49,7 @@ def create_device_service(
             api_token_hash=api_token_hash,
             location=payload.location,
             is_active=payload.is_active,
+            is_for_enrollment=payload.is_for_enrollment,
         )
     except IntegrityError as exc:
         _handle_device_integrity_error(db, exc)
@@ -77,6 +78,7 @@ def update_device_service(
             device_code=payload.device_code,
             location=payload.location,
             is_active=payload.is_active,
+            is_for_enrollment=payload.is_for_enrollment,
         )
     except IntegrityError as exc:
         _handle_device_integrity_error(db, exc)

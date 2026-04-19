@@ -8,6 +8,7 @@ class DeviceBase(BaseModel):
     device_code: str
     location: str | None = None
     is_active: bool = True
+    is_for_enrollment: bool = False
 
     @field_validator("device_name", "device_code")
     @classmethod
@@ -35,6 +36,7 @@ class DeviceUpdate(BaseModel):
     device_code: str
     location: str | None = None
     is_active: bool = True
+    is_for_enrollment: bool = False
 
     @field_validator("device_name", "device_code")
     @classmethod
@@ -61,6 +63,7 @@ class DeviceOut(BaseModel):
     device_code: str
     location: str | None
     is_active: bool
+    is_for_enrollment: bool
     last_seen_at: datetime | None
     created_at: datetime
     updated_at: datetime

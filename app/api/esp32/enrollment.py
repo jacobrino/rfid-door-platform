@@ -25,6 +25,12 @@ def esp32_enrollment_scan(
 
     if not device:
         raise HTTPException(status_code=404, detail="Appareil introuvable.")
+    
+    if not device.is_for_enrollment:
+        raise HTTPException(
+            status_code=403,
+            detail="Cet appareil n'est pas autorisé pour l'inscription RFID."
+        )
 
     if not device.is_active:
         raise HTTPException(status_code=403, detail="Appareil inactif.")
