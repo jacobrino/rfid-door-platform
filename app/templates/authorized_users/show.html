@@ -3,6 +3,163 @@
 {% block title %}Détail utilisateur autorisé{% endblock %}
 
 {% block page_content %}
+<style>
+    .id-card-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .id-card {
+        width: 85.60mm;
+        min-height: 53.98mm;
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        border: 1px solid #e5e7eb;
+        font-family: Arial, sans-serif;
+        position: relative;
+    }
+
+    .id-card-header {
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        color: #fff;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .id-card-header-title {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .id-card-body {
+        padding: 14px 16px 12px 16px;
+    }
+
+    .id-card-main {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+    }
+
+    .id-card-photo {
+        width: 90px;
+        height: 90px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 2px solid #e5e7eb;
+        background: #f8f9fa;
+        flex-shrink: 0;
+    }
+
+    .id-card-photo-placeholder {
+        width: 90px;
+        height: 90px;
+        border-radius: 12px;
+        background: #eef2f7;
+        border: 2px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        font-size: 28px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .id-card-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .id-card-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.1;
+        margin-bottom: 6px;
+    }
+
+    .id-card-subtitle {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+
+    .id-card-line {
+        font-size: 12px;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .id-card-line strong {
+        color: #111827;
+    }
+
+    .id-card-bottom {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .id-card-meta {
+        flex: 1;
+    }
+
+    .id-card-code {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0d6efd;
+        margin-bottom: 6px;
+    }
+
+    .id-card-validity {
+        font-size: 11px;
+        color: #374151;
+        line-height: 1.4;
+    }
+
+    .id-card-qr img {
+        width: 82px;
+        height: 82px;
+        object-fit: contain;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 4px;
+    }
+
+    .download-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 1rem;
+    }
+
+    .card-format-note {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .id-card {
+            width: 100%;
+            max-width: 420px;
+        }
+    }
+</style>
+
 <div class="page-header">
     <div>
         <h2 class="page-title">{{ user.first_name }} {{ user.last_name }}</h2>
@@ -18,6 +175,99 @@
 
 <div class="card detail-page-card">
     <div class="card-body">
+
+        <div class="detail-section">
+            <div class="detail-section-title">Carte d’identification</div>
+
+            <div class="id-card-wrapper">
+                <div class="id-card">
+                    <div class="id-card-header">
+                        <div class="id-card-header-title">Utilisateur autorisé</div>
+                        <div style="font-size: 22px;">📶</div>
+                    </div>
+
+                    <div class="id-card-body">
+                        <div class="id-card-main">
+                            {% if user.path %}
+                                <img
+                                    src="{{ request.url_for('static', path=user.path) }}"
+                                    alt="Photo de {{ user.first_name }} {{ user.last_name }}"
+                                    class="id-card-photo"
+                                >
+                            {% else %}
+                                <div class="id-card-photo-placeholder">
+                                    {{ (user.first_name[:1] if user.first_name else '') ~ (user.last_name[:1] if user.last_name else '') }}
+                                </div>
+                            {% endif %}
+
+                            <div class="id-card-info">
+                                <div class="id-card-name">{{ user.first_name }} {{ user.last_name }}</div>
+                                <div class="id-card-subtitle">
+                                    {{ user.gender or "Utilisateur" }}
+                                </div>
+
+                                <div class="id-card-line"><strong>Tél :</strong> {{ user.phone or "—" }}</div>
+                                <div class="id-card-line"><strong>Email :</strong> {{ user.email or "—" }}</div>
+                                <div class="id-card-line"><strong>Statut :</strong> {{ "Actif" if user.is_active else "Inactif" }}</div>
+                            </div>
+                        </div>
+
+                        <div class="id-card-bottom">
+                            <div class="id-card-meta">
+                                <div class="id-card-code">
+                                    Code : {{ user.reference_code or "—" }}
+                                </div>
+                                <div class="id-card-validity">
+                                    <div>
+                                        <strong>Valide du :</strong>
+                                        {{ user.valid_from.strftime("%d/%m/%Y %H:%M") if user.valid_from else "—" }}
+                                    </div>
+                                    <div>
+                                        <strong>Au :</strong>
+                                        {{ user.valid_until.strftime("%d/%m/%Y %H:%M") if user.valid_until else "—" }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="id-card-qr">
+                                <img
+                                    src="{{ request.url_for('authorized_users.qr', authorized_user_id=user.id) }}"
+                                    alt="QR Code {{ user.first_name }} {{ user.last_name }}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="download-card-actions">
+                <a
+                    href="{{ request.url_for('authorized_users.download_card', authorized_user_id=user.id) }}?format=cr80"
+                    class="btn btn-primary"
+                >
+                    Télécharger carte RFID
+                </a>
+
+                <a
+                    href="{{ request.url_for('authorized_users.download_card', authorized_user_id=user.id) }}?format=a4"
+                    class="btn btn-outline-primary"
+                >
+                    Télécharger version A4
+                </a>
+
+                <a
+                    href="{{ request.url_for('authorized_users.download_card', authorized_user_id=user.id) }}?format=badge"
+                    class="btn btn-outline-primary"
+                >
+                    Télécharger badge bureau
+                </a>
+            </div>
+
+            <div class="card-format-note">
+                Formats disponibles : carte RFID (CR80), badge bureau, impression A4.
+            </div>
+        </div>
+
         <div class="detail-section">
             <div class="detail-section-title">Photo</div>
             {% if user.path %}
@@ -36,8 +286,28 @@
                 <div class="detail-item"><span class="detail-item-label">Téléphone</span><div class="detail-item-value">{{ user.phone or "—" }}</div></div>
                 <div class="detail-item"><span class="detail-item-label">E-mail</span><div class="detail-item-value">{{ user.email or "—" }}</div></div>
                 <div class="detail-item"><span class="detail-item-label">Code de référence</span><div class="detail-item-value">{{ user.reference_code or "—" }}</div></div>
+                <div class="detail-item"><span class="detail-item-label">Valide du</span><div class="detail-item-value">{{ user.valid_from.strftime("%d/%m/%Y %H:%M") if user.valid_from else "—" }}</div></div>
+                <div class="detail-item"><span class="detail-item-label">Valide au</span><div class="detail-item-value">{{ user.valid_until.strftime("%d/%m/%Y %H:%M") if user.valid_until else "—" }}</div></div>
+                <div class="detail-item"><span class="detail-item-label">Statut</span><div class="detail-item-value">{{ "Actif" if user.is_active else "Inactif" }}</div></div>
             </div>
         </div>
+
+        <div class="detail-section">
+            <div class="detail-section-title">Devices autorisés</div>
+
+            {% if allowed_devices %}
+            <div class="info-strip">
+                {% for device in allowed_devices %}
+                <span class="info-chip">
+                    {{ device.device_name }} — {{ device.device_code }}
+                </span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="detail-note-box">Aucun device autorisé.</div>
+            {% endif %}
+        </div>
+
     </div>
 </div>
 {% endblock %}

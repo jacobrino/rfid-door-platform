@@ -120,6 +120,35 @@
             </div>
 
             <div class="form-section">
+                <div class="form-section-title">Devices autorisés</div>
+
+                <div class="devices-scroll-box">
+                    <div class="row g-3">
+                        {% for device in devices %}
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="device_{{ device.id }}"
+                                    name="device_ids"
+                                    value="{{ device.id }}"
+                                    {% if device.id in selected_device_ids %}checked{% endif %}
+                                >
+                                <label class="form-check-label" for="device_{{ device.id }}">
+                                    {{ device.device_name }} — {{ device.device_code }}
+                                    {% if device.location %}
+                                    <span class="text-muted">({{ device.location }})</span>
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
                 <div class="form-section-title">Notes</div>
                 <textarea class="form-control" id="notes" name="notes" rows="4">{{ form_data.get('notes', '') }}</textarea>
             </div>

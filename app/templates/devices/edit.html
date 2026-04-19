@@ -24,6 +24,12 @@
                         <input type="text" class="form-control" id="device_name" name="device_name" value="{{ form_data.get('device_name', '') }}" required>
                     </div>
                     <div class="col-md-6">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="is_for_enrollment" name="is_for_enrollment" {% if form_data.get('is_for_enrollment', False) %}checked{% endif %}>
+                            <label class="form-check-label" for="is_for_enrollment">Utilisable pour l’inscription RFID</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <label for="device_code" class="form-label">Code appareil</label>
                         <input type="text" class="form-control" id="device_code" name="device_code" value="{{ form_data.get('device_code', '') }}" required>
                     </div>

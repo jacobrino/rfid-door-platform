@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
 
@@ -35,3 +34,9 @@ class AuthorizedUser(Base):
         nullable=False,
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+    authorized_user_devices = relationship(
+        "AuthorizedUserDevice",
+        back_populates="authorized_user",
+        cascade="all, delete-orphan",
+    )

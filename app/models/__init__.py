@@ -5,3 +5,4 @@ from app.models.rfid_card import RfidCard
 from app.models.rfid_assignment import RfidAssignment
 from app.models.device import Device
 from app.models.access_log import AccessLog
+from app.models.authorized_user_device import AuthorizedUserDevice

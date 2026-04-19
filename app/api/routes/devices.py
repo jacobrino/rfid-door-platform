@@ -3,8 +3,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-from app.core.config import settings
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.dependencies import require_admin, require_agent_or_admin
 from app.crud.device import get_device_by_id, get_devices_paginated
@@ -36,6 +36,7 @@ def devices_index(
     page: int = Query(default=1, ge=1),
     search: str | None = Query(default=None),
     is_active: str | None = Query(default=None),
+    is_for_enrollment: str | None = Query(default=None),
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_agent_or_admin),
 ):
@@ -45,6 +46,7 @@ def devices_index(
         per_page=DEFAULT_PER_PAGE,
         search=search,
         is_active=is_active,
+        is_for_enrollment=is_for_enrollment,
     )
 
     total_pages = max(1, (total + DEFAULT_PER_PAGE - 1) // DEFAULT_PER_PAGE)
@@ -55,6 +57,7 @@ def devices_index(
     filters = {
         "search": search or "",
         "is_active": is_active or "",
+        "is_for_enrollment": is_for_enrollment or "",
     }
 
     return templates.TemplateResponse(
@@ -77,7 +80,7 @@ def devices_index(
     )
 
 
-@router.get("/devices/create",  name="devices.create.index", response_class=HTMLResponse)
+@router.get("/devices/create", name="devices.create.index", response_class=HTMLResponse)
 def devices_create_page(
     request: Request,
     current_user: StaffUser = Depends(require_admin),
@@ -88,7 +91,10 @@ def devices_create_page(
         context={
             "request": request,
             "error": None,
-            "form_data": {},
+            "form_data": {
+                "is_active": True,
+                "is_for_enrollment": False,
+            },
             "current_user": current_user,
             "generated_token": None,
         },
@@ -102,6 +108,7 @@ def devices_store(
     device_code: str = Form(...),
     location: str | None = Form(None),
     is_active: str | None = Form(None),
+    is_for_enrollment: str | None = Form(None),
     api_token: str | None = Form(None),
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_admin),
@@ -111,6 +118,7 @@ def devices_store(
         "device_code": device_code,
         "location": clean_optional_string(location),
         "is_active": is_active == "on",
+        "is_for_enrollment": is_for_enrollment == "on",
         "api_token": clean_optional_string(api_token),
     }
 
@@ -120,6 +128,7 @@ def devices_store(
             device_code=device_code,
             location=clean_optional_string(location),
             is_active=is_active == "on",
+            is_for_enrollment=is_for_enrollment == "on",
             api_token=clean_optional_string(api_token),
         )
 
@@ -165,7 +174,7 @@ def devices_store(
         )
 
 
-@router.get("/devices/{device_id}", name="devices.show",response_class=HTMLResponse)
+@router.get("/devices/{device_id}", name="devices.show", response_class=HTMLResponse)
 def devices_show(
     device_id: int,
     request: Request,
@@ -175,7 +184,7 @@ def devices_show(
     device = get_device_by_id(db, device_id)
 
     if not device:
-        return RedirectResponse(url=request.url_for('devices.index'), status_code=303)
+        return RedirectResponse(url=request.url_for("devices.index"), status_code=303)
 
     return templates.TemplateResponse(
         request=request,
@@ -199,13 +208,14 @@ def devices_edit_page(
     device = get_device_by_id(db, device_id)
 
     if not device:
-        return RedirectResponse(url=request.url_for('devices.index'), status_code=303)
+        return RedirectResponse(url=request.url_for("devices.index"), status_code=303)
 
     form_data = {
         "device_name": device.device_name,
         "device_code": device.device_code,
         "location": device.location or "",
         "is_active": device.is_active,
+        "is_for_enrollment": device.is_for_enrollment,
     }
 
     return templates.TemplateResponse(
@@ -229,19 +239,21 @@ def devices_update(
     device_code: str = Form(...),
     location: str | None = Form(None),
     is_active: str | None = Form(None),
+    is_for_enrollment: str | None = Form(None),
     db: Session = Depends(get_db),
     current_user: StaffUser = Depends(require_admin),
 ):
     device = get_device_by_id(db, device_id)
 
     if not device:
-        return RedirectResponse(url="/devices", status_code=303)
+        return RedirectResponse(url=request.url_for("devices.index"), status_code=303)
 
     form_data = {
         "device_name": device_name,
         "device_code": device_code,
         "location": clean_optional_string(location),
         "is_active": is_active == "on",
+        "is_for_enrollment": is_for_enrollment == "on",
     }
 
     try:
@@ -250,11 +262,15 @@ def devices_update(
             device_code=device_code,
             location=clean_optional_string(location),
             is_active=is_active == "on",
+            is_for_enrollment=is_for_enrollment == "on",
         )
 
         update_device_service(db, device_id, payload)
 
-        return RedirectResponse(url=request.url_for('devices.show',device_id=device_id), status_code=303)
+        return RedirectResponse(
+            url=request.url_for("devices.show", device_id=device_id),
+            status_code=303,
+        )
 
     except ValidationError as e:
         error_message = e.errors()[0]["msg"] if e.errors() else "Données invalides."
@@ -295,8 +311,7 @@ def devices_regenerate_token(
     device = get_device_by_id(db, device_id)
 
     if not device:
-        return RedirectResponse(url=request.url_for('devices.index'), status_code=303)
-    
+        return RedirectResponse(url=request.url_for("devices.index"), status_code=303)
 
     try:
         updated_device, plain_token = regenerate_device_token_service(db, device_id)

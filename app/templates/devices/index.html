@@ -6,7 +6,7 @@
 <div class="page-header">
     <div>
         <h2 class="page-title">Appareils</h2>
-        <p class="page-subtitle">Gestion des ESP32 et autres appareils autorisés.</p>
+        <p class="page-subtitle">Gestion des appareils ESP32 et autres terminaux autorisés.</p>
     </div>
 
     <div class="d-flex gap-2">
@@ -33,7 +33,7 @@
     <div class="card filter-panel">
         <div class="card-body">
             <form method="get" action="{{ request.url_for('devices.index') }}" class="row g-3">
-                <div class="col-md-8">
+                <div class="col-md-4">
                     <label for="search" class="form-label">Recherche</label>
                     <input
                         type="text"
@@ -41,7 +41,7 @@
                         id="search"
                         name="search"
                         value="{{ filters.search }}"
-                        placeholder="Nom, code, localisation..."
+                        placeholder="Nom, code ou localisation"
                     >
                 </div>
 
@@ -51,6 +51,15 @@
                         <option value="">Tous</option>
                         <option value="active" {% if filters.is_active == "active" %}selected{% endif %}>Actif</option>
                         <option value="inactive" {% if filters.is_active == "inactive" %}selected{% endif %}>Inactif</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="is_for_enrollment" class="form-label">Inscription RFID</label>
+                    <select class="form-select" id="is_for_enrollment" name="is_for_enrollment">
+                        <option value="">Tous</option>
+                        <option value="yes" {% if filters.is_for_enrollment == "yes" %}selected{% endif %}>Oui</option>
+                        <option value="no" {% if filters.is_for_enrollment == "no" %}selected{% endif %}>Non</option>
                     </select>
                 </div>
 
@@ -84,6 +93,7 @@
                         <th>Code appareil</th>
                         <th>Localisation</th>
                         <th>Statut</th>
+                        <th>Inscription RFID</th>
                         <th>Dernière activité</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -91,7 +101,7 @@
                 <tbody>
                     {% for device in devices %}
                     <tr>
-                        <td class="fw-semibold">{{ device.device_name }}</td>
+                        <td>{{ device.device_name }}</td>
                         <td>{{ device.device_code }}</td>
                         <td>{{ device.location or "—" }}</td>
                         <td>
@@ -102,18 +112,19 @@
                             {% endif %}
                         </td>
                         <td>
+                            {% if device.is_for_enrollment %}
+                            <span class="badge rounded-pill text-bg-primary">Oui</span>
+                            {% else %}
+                            <span class="badge rounded-pill text-bg-light">Non</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             {{ device.last_seen_at.strftime("%d/%m/%Y %H:%M") if device.last_seen_at else "—" }}
                         </td>
                         <td class="text-end">
                             <a href="{{ request.url_for('devices.show', device_id=device.id) }}" class="btn btn-sm btn-outline-info">
                                 Voir
                             </a>
-
-                            {% if current_user.role and current_user.role.name == "admin" %}
-                            <a href="{{ request.url_for('devices.edit.show', device_id=device.id) }}" class="btn btn-sm btn-outline-primary">
-                                Modifier
-                            </a>
-                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -125,7 +136,7 @@
             <ul class="pagination pagination-modern mb-0">
                 <li class="page-item {% if not has_previous %}disabled{% endif %}">
                     <a class="page-link"
-                       href="{{ request.url_for('devices.index') }}?page={{ previous_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
+                       href="{{ request.url_for('devices.index') }}?page={{ previous_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}&is_for_enrollment={{ filters.is_for_enrollment }}">
                         Précédent
                     </a>
                 </li>
@@ -133,7 +144,7 @@
                 {% for page_number in page_numbers %}
                 <li class="page-item {% if page_number == current_page %}active{% endif %}">
                     <a class="page-link"
-                       href="{{ request.url_for('devices.index') }}?page={{ page_number }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
+                       href="{{ request.url_for('devices.index') }}?page={{ page_number }}&search={{ filters.search }}&is_active={{ filters.is_active }}&is_for_enrollment={{ filters.is_for_enrollment }}">
                         {{ page_number }}
                     </a>
                 </li>
@@ -141,7 +152,7 @@
 
                 <li class="page-item {% if not has_next %}disabled{% endif %}">
                     <a class="page-link"
-                       href="{{ request.url_for('devices.index') }}?page={{ next_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}">
+                       href="{{ request.url_for('devices.index') }}?page={{ next_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}&is_for_enrollment={{ filters.is_for_enrollment }}">
                         Suivant
                     </a>
                 </li>

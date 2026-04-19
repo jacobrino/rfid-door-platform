@@ -41,6 +41,14 @@
                             required
                         >
                     </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="is_for_enrollment" name="is_for_enrollment" {% if form_data.get('is_for_enrollment', False) %}checked{% endif %}>
+                            <label class="form-check-label" for="is_for_enrollment">Utilisable pour l’inscription RFID</label>
+                        </div>
+                    </div>
+                    
                     <div class="col-md-6">
                         <label for="location" class="form-label">Localisation</label>
                         <input

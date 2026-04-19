@@ -16,6 +16,7 @@ from app.schemas.esp32_access import (
     Esp32AccessCheckRequest,
     Esp32AccessCheckResponse,
 )
+from app.crud.authorized_user_device import user_has_access_to_device
 
 
 class Esp32AccessServiceError(Exception):
@@ -122,6 +123,7 @@ def check_esp32_access_service(
 
     if not verify_device_token(bearer_token, device.api_token_hash):
         raise Esp32AccessServiceError("Token appareil invalide.")
+    
 
     update_device_last_seen(db, device)
 
@@ -198,6 +200,26 @@ def check_esp32_access_service(
             reason="assigned_user_not_found",
             door_opened=False,
             rfid_card_id=card.id,
+            assignment_id=assignment.id,
+        )
+    
+    if not user_has_access_to_device(
+        db,
+        authorized_user_id=user.id,
+        device_id=device.id,
+    ):
+        # ici tu refuses l'accès + log raison
+        return _log_and_respond(
+            db,
+            device_id=device.id,
+            uid_scanned=payload.uid,
+            scanned_at=scanned_at,
+            decision="denied",
+            direction="unknown",
+            reason="device_not_allowed",
+            door_opened=False,
+            rfid_card_id=card.id,
+            authorized_user_id=user.id,
             assignment_id=assignment.id,
         )
 

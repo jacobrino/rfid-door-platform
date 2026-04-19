@@ -55,9 +55,20 @@ def check_access(
         )
     
 """
-jacob@jacob-IdeaPad-3-15IAU7:/var/www/html/ENI/rfid-door-platform$ curl -X POST "http://127.0.0.1:8000/api/esp32/access/check" -H "Content-Type: application/json" -H "Authorization: Bearer HsySaOIkqkXhYj4VBl6KLjtHcZM_SF0NWWf8kqRPcdY" -d '{"device_code": "ssqa","uid": "id_puce_rfid"}'
+jacob@jacob-IdeaPad-3-15IAU7:/var/www/html/ENI/rfid-door-platform$ 
 
-{"decision":"denied","door_opened":false,"direction":"unknown","reason":"card_not_found","user_id":null,"assignment_id":null,"card_id":null,"scanned_at":"2026-04-11T21:38:51.010528"}jacob@jacob-IdeaPad-3-15IAU7:/var/www/html/ENI/rfid-door-platform$ curl -X POST "http://127.0.0.1:8000/api/esp32/access/check"   -H "Content-Type: application/json"   -H "Authorization: Bearer HsySaOIkqkXhYj4VBl6KLjtHcZM_SF0NWWf8kqRPcdY"   -d '{
+curl -X POST "http://127.0.0.1:8000/api/esp32/access/check" 
+-H "Content-Type: application/json" -H "Authorization: Bearer HsySaOIkqkXhYj4VBl6KLjtHcZM_SF0NWWf8kqRPcdY" 
+-d '{"device_code": "ssqa","uid": "id_puce_rfid"}'
+
+
+
+
+
+
+{"decision":"denied","door_opened":false,"direction":"unknown","reason":"card_not_found","user_id":null,"assignment_id":null,"card_id":null,"scanned_at":"2026-04-11T21:38:51.010528"}
+
+jacob@jacob-IdeaPad-3-15IAU7:/var/www/html/ENI/rfid-door-platform$ curl -X POST "http://127.0.0.1:8000/api/esp32/access/check"   -H "Content-Type: application/json"   -H "Authorization: Bearer HsySaOIkqkXhYj4VBl6KLjtHcZM_SF0NWWf8kqRPcdY"   -d '{
     "device_code": "ssqa",
     "uid": "qdsqdqsdqsdqsdsqdss"
   }'

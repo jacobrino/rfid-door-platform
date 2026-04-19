@@ -10,7 +10,7 @@ def get_devices(
     db: Session,
     search: str | None = None,
 ) -> list[Device]:
-    query = db.query(Device)
+    query = db.query(Device).filter(Device.is_for_enrollment.is_(False))
 
     if search:
         search_term = f"%{search.strip()}%"
@@ -32,6 +32,7 @@ def get_devices_paginated(
     per_page: int = 10,
     search: str | None = None,
     is_active: str | None = None,
+    is_for_enrollment: str | None = None,
 ) -> tuple[list[Device], int]:
     query = db.query(Device)
 
@@ -49,6 +50,11 @@ def get_devices_paginated(
         query = query.filter(Device.is_active.is_(True))
     elif is_active == "inactive":
         query = query.filter(Device.is_active.is_(False))
+
+    if is_for_enrollment == "yes":
+        query = query.filter(Device.is_for_enrollment.is_(True))
+    elif is_for_enrollment == "no":
+        query = query.filter(Device.is_for_enrollment.is_(False))
 
     total = query.count()
     offset = (page - 1) * per_page
@@ -85,6 +91,7 @@ def create_device(
     api_token_hash: str,
     location: str | None = None,
     is_active: bool = True,
+    is_for_enrollment: bool = False,
 ) -> Device:
     device = Device(
         device_name=device_name,
@@ -92,6 +99,7 @@ def create_device(
         api_token_hash=api_token_hash,
         location=location,
         is_active=is_active,
+        is_for_enrollment=is_for_enrollment,
     )
     db.add(device)
     db.commit()
@@ -108,11 +116,13 @@ def update_device(
     device_code: str,
     location: str | None,
     is_active: bool,
+    is_for_enrollment: bool,
 ) -> Device:
     device.device_name = device_name
     device.device_code = device_code
     device.location = location
     device.is_active = is_active
+    device.is_for_enrollment = is_for_enrollment
     device.updated_at = datetime.utcnow()
 
     db.commit()
