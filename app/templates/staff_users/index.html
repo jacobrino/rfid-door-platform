@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Agents{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Agents</h2>
+        <p class="page-subtitle">
+            Gestion des utilisateurs agents du back-office.
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="{{ request.url_for('staff_users.create') }}" class="btn btn-primary">
+            Nouvel agent
+        </a>
+    </div>
+</div>
+
+<div class="card filter-panel mb-4">
+    <div class="card-body">
+        <form method="get" action="{{ request.url_for('staff_users.index') }}" class="row g-3">
+            <div class="col-md-6">
+                <label for="search" class="form-label">Recherche</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="search"
+                    name="search"
+                    value="{{ filters.search }}"
+                    placeholder="Nom, prénom ou email"
+                >
+            </div>
+
+            <div class="col-md-3">
+                <label for="is_active" class="form-label">Statut</label>
+                <select class="form-select" id="is_active" name="is_active">
+                    <option value="">Tous</option>
+                    <option value="active" {% if filters.is_active == "active" %}selected{% endif %}>Actifs</option>
+                    <option value="inactive" {% if filters.is_active == "inactive" %}selected{% endif %}>Inactifs</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+                <a href="{{ request.url_for('staff_users.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card data-card">
+    <div class="card-body">
+        {% if staff_users %}
+        <div class="table-header-bar d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+            <div>
+                <span class="table-counter">{{ pagination.total }}</span>
+                <span class="text-muted">résultat(s)</span>
+            </div>
+            <div class="text-muted small">
+                Page {{ pagination.page }} / {{ pagination.total_pages }}
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-modern align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom complet</th>
+                        <th>Email</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff_user in staff_users %}
+                    <tr>
+                        <td>#{{ staff_user.id }}</td>
+                        <td>{{ staff_user.first_name }} {{ staff_user.last_name }}</td>
+                        <td>{{ staff_user.email }}</td>
+                        <td>
+                            {% if staff_user.is_active %}
+                            <span class="badge rounded-pill text-bg-success">Actif</span>
+                            {% else %}
+                            <span class="badge rounded-pill text-bg-secondary">Inactif</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ request.url_for('staff_users.show', staff_user_id=staff_user.id) }}" class="btn btn-sm btn-outline-info">
+                                Voir
+                            </a>
+                            <a href="{{ request.url_for('staff_users.edit', staff_user_id=staff_user.id) }}" class="btn btn-sm btn-outline-primary">
+                                Modifier
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if pagination.total_pages > 1 %}
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mt-4">
+            <div class="text-muted small">
+                Affichage de la page {{ pagination.page }} sur {{ pagination.total_pages }}
+            </div>
+
+            <nav aria-label="Pagination des agents">
+                <ul class="pagination mb-0">
+                    <li class="page-item {% if pagination.page <= 1 %}disabled{% endif %}">
+                        <a
+                            class="page-link"
+                            href="{{ request.url_for('staff_users.index') }}?page={{ pagination.page - 1 }}&per_page={{ pagination.per_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}"
+                        >
+                            Précédent
+                        </a>
+                    </li>
+
+                    {% for page_num in range(1, pagination.total_pages + 1) %}
+                        {% if page_num == pagination.page %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% elif page_num >= pagination.page - 2 and page_num <= pagination.page + 2 %}
+                        <li class="page-item">
+                            <a
+                                class="page-link"
+                                href="{{ request.url_for('staff_users.index') }}?page={{ page_num }}&per_page={{ pagination.per_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}"
+                            >
+                                {{ page_num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <li class="page-item {% if pagination.page >= pagination.total_pages %}disabled{% endif %}">
+                        <a
+                            class="page-link"
+                            href="{{ request.url_for('staff_users.index') }}?page={{ pagination.page + 1 }}&per_page={{ pagination.per_page }}&search={{ filters.search }}&is_active={{ filters.is_active }}"
+                        >
+                            Suivant
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <h5 class="mb-2">Aucun agent trouvé</h5>
+            <p class="text-muted mb-0">Aucun agent disponible pour le moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

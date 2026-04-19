@@ -17,6 +17,8 @@ from app.api.routes.assignments import router as assignments_router
 from app.api.routes.devices import router as devices_router
 from app.api.esp32.access import router as esp32_access_router
 from app.api.routes.access_logs import router as access_logs_router
+from app.api.routes.staff_users import router as staff_users_router
+
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -37,6 +39,7 @@ templates = Jinja2Templates(directory=settings.template_path)
 app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(authorized_users_router)
+app.include_router(staff_users_router)
 app.include_router(rfid_cards_router)
 app.include_router(assignments_router)
 app.include_router(devices_router)
