@@ -2,6 +2,10 @@
 
 {% block title %}Détail carte RFID{% endblock %}
 
+{% block extra_css %}
+<link href="{{ url_for('static', path='css/pages/rfid_cards.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block page_content %}
 <div class="page-header">
     <div>

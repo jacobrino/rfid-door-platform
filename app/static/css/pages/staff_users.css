@@ -1,0 +1,6 @@
+.staff-user-avatar {
+    width: 58px;
+    height: 58px;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    font-size: 1.15rem;
+}

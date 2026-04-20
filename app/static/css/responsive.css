@@ -1,0 +1,64 @@
+@media (max-width: 991.98px) {
+    .sidebar {
+        display: none;
+    }
+
+    .app-content {
+        padding: 1rem;
+    }
+
+    .metric-value {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .page-actions,
+    .form-actions {
+        width: 100%;
+    }
+
+    .page-actions > *,
+    .form-actions > * {
+        flex: 1 1 auto;
+    }
+
+    .topbar-title {
+        font-size: 0.98rem;
+    }
+
+    .table-modern {
+        min-width: 640px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table-header-bar {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .app-content {
+        padding: 0.85rem;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+    }
+
+    .metric-value {
+        font-size: 1.35rem;
+    }
+}

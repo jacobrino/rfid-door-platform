@@ -2,6 +2,10 @@
 
 {% block title %}Créer un utilisateur autorisé{% endblock %}
 
+{% block extra_css %}
+<link href="{{ url_for('static', path='css/pages/authorized_users.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block page_content %}
 {% set now_dt = request.state.now if request.state.now is defined else none %}
 {% set default_valid_from = now_dt.strftime("%Y-%m-%dT%H:%M") if now_dt else "" %}

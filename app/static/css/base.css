@@ -1,0 +1,20 @@
+:root {
+    --app-bg: #f4f7fb;
+    --sidebar-bg: #0f172a;
+    --sidebar-text: #cbd5e1;
+    --sidebar-active: #2563eb;
+    --card-radius: 16px;
+    --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
+    --border-soft: #e5e7eb;
+    --primary-soft: #eff6ff;
+}
+
+body {
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    background: var(--app-bg);
+    color: #0f172a;
+}
+
+.app-body {
+    min-height: 100vh;
+}

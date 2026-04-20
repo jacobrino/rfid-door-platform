@@ -1,0 +1,50 @@
+.uid-capture-wrap {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.uid-capture-wrap .form-control {
+    flex: 1;
+}
+
+.uid-capture-btn {
+    white-space: nowrap;
+    padding-inline: 0.85rem;
+    min-height: 48px;
+}
+
+.uid-capture-status {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.uid-captured-success {
+    background-color: #dcfce7 !important;
+    border-color: #16a34a !important;
+    color: #166534 !important;
+    font-weight: 600;
+    cursor: not-allowed !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    pointer-events: none !important;
+}
+
+.uid-captured-success:disabled {
+    background-color: #dcfce7 !important;
+    border-color: #16a34a !important;
+    color: #166534 !important;
+    opacity: 1 !important;
+}
+
+@media (max-width: 575.98px) {
+    .uid-capture-wrap {
+        flex-direction: column;
+    }
+
+    .uid-capture-btn {
+        width: 100%;
+    }
+}
