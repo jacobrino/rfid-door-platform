@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from app.core.security import verify_device_token
 from app.crud.device import get_device_by_code, update_device_last_seen
 
-router = APIRouter(prefix="/api/esp32/access", tags=["ESP32 Access"])
+router = APIRouter(prefix="/api/esp32/access", tags=["Electronics Objects ESP32 Access"])
 
 
 def extract_bearer_token(authorization: str | None) -> str:

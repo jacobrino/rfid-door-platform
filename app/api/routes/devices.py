@@ -17,7 +17,7 @@ from app.services.device_service import (
     update_device_service,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["Web Devices"])
 templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10

@@ -18,6 +18,7 @@ from app.api.routes.devices import router as devices_router
 from app.api.esp32.access import router as esp32_access_router
 from app.api.routes.access_logs import router as access_logs_router
 from app.api.routes.staff_users import router as staff_users_router
+from app.api.json_routes.main import router as json_api_router
 
 
 app = FastAPI(
@@ -43,12 +44,15 @@ app.include_router(staff_users_router)
 app.include_router(rfid_cards_router)
 app.include_router(assignments_router)
 app.include_router(devices_router)
-app.include_router(esp32_access_router)
 app.include_router(access_logs_router)
 app.include_router(esp32_enrollment_router)
+app.include_router(esp32_access_router)
 
 
-@app.get("/")
+# for api mobile
+app.include_router(json_api_router)
+
+@app.get("/",tags=["General"])
 def home(request: Request):
     if request.session.get("user_id"):
         return RedirectResponse(url=request.url_for('dashboard.index'), status_code=303)

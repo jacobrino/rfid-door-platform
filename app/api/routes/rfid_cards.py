@@ -26,7 +26,7 @@ from app.services.rfid_uid_capture_service import (
     reset_uid_capture,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["Web Rfid Cards"])
 templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10

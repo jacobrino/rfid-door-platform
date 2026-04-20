@@ -28,7 +28,7 @@ from app.services.rfid_assignment_service import (
     unassign_rfid_assignment_service,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["Web Assignments"])
 templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10

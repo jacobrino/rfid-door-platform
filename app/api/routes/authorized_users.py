@@ -47,7 +47,7 @@ from app.crud.authorized_user_device import (
 )
 
 
-router = APIRouter()
+router = APIRouter(tags=["Web Authorized Users"])
 templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10

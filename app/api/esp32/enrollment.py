@@ -7,7 +7,7 @@ from app.crud.device import get_device_by_code
 from app.core.security import verify_device_token
 from app.services.rfid_uid_capture_service import submit_uid_capture
 
-router = APIRouter(prefix="/api/esp32", tags=["ESP32 Enrollment"])
+router = APIRouter(prefix="/api/esp32", tags=["Electronics Objects ESP32 Enrollment"])
 
 
 class EnrollmentScanPayload(BaseModel):

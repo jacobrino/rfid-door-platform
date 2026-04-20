@@ -16,7 +16,7 @@ from app.crud.access_log import (
 )
 from app.models.staff_user import StaffUser
 
-router = APIRouter()
+router = APIRouter(tags=["Web Access Logs"])
 templates = Jinja2Templates(directory=settings.template_path)
 
 DEFAULT_PER_PAGE = 10

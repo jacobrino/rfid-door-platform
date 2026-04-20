@@ -15,7 +15,7 @@ from app.core.config import settings
 
 templates = Jinja2Templates(directory=settings.template_path)
 
-router = APIRouter(prefix="/staff-users", tags=["Staff Users"])
+router = APIRouter(prefix="/staff-users", tags=["Web Staff Users"])
 
 
 @router.get("/", name="staff_users.index")

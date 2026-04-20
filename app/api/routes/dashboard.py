@@ -16,7 +16,7 @@ from app.models.rfid_assignment import RfidAssignment
 from app.models.rfid_card import RfidCard
 from app.models.staff_user import StaffUser
 
-router = APIRouter()
+router = APIRouter(tags=["Web Dashboard"])
 templates = Jinja2Templates(directory=settings.template_path)
 
 

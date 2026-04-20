@@ -3,12 +3,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.core.config import settings
-
+from fastapi.responses import JSONResponse
 from app.core.database import get_db
 from app.models.staff_user import StaffUser
 from app.core.security import verify_password
 
-router = APIRouter()
+router = APIRouter(tags=["Web Auth"])
 templates = Jinja2Templates(directory=settings.template_path)
 
 
@@ -72,6 +72,61 @@ def login_submit(
 
     return RedirectResponse(url=request.url_for('dashboard.index'), status_code=303)
 
+
+@router.get("/me", name="auth.me")
+def me(request: Request, db: Session = Depends(get_db)):
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JSONResponse(
+            status_code=401,
+            content={
+                "authenticated": False,
+                "message": "Utilisateur non authentifié."
+            },
+        )
+
+    user = (
+        db.query(StaffUser)
+        .filter(StaffUser.id == user_id)
+        .first()
+    )
+
+    if not user:
+        request.session.clear()
+        return JSONResponse(
+            status_code=401,
+            content={
+                "authenticated": False,
+                "message": "Session invalide."
+            },
+        )
+
+    if not user.is_active:
+        request.session.clear()
+        return JSONResponse(
+            status_code=403,
+            content={
+                "authenticated": False,
+                "message": "Compte inactif."
+            },
+        )
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "authenticated": True,
+            "user": {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "full_name": f"{user.first_name} {user.last_name}",
+                "email": user.email,
+                "is_active": user.is_active,
+                "role": user.role.name if user.role else None,
+            },
+        },
+    )
 
 @router.get("/logout",name="auth.logout")
 def logout(request: Request):
