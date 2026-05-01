@@ -300,12 +300,12 @@ def rfid_cards_update(
 def rfid_cards_start_uid_capture(
     current_user: StaffUser = Depends(require_admin),
 ):
-    capture = start_uid_capture(timeout_seconds=15)
+    capture = start_uid_capture(timeout_seconds=30)
     return JSONResponse({
         "success": True,
         "capture_id": capture["capture_id"],
         "status": "waiting",
-        "expires_in": 15,
+        "expires_in": 30,
     })
 
 

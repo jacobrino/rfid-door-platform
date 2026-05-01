@@ -195,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 captureId = null;
                 setIdleState();
                 resetUidFieldVisualState();
-                statusBox.textContent = "Échec : aucun badge détecté dans les 15 secondes.";
+                statusBox.textContent = "Échec : aucun badge détecté dans les 30 secondes.";
                 return;
             }
 
