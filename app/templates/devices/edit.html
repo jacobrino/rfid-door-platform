@@ -52,5 +52,25 @@
             </div>
         </form>
     </div>
+
+    {% if current_user.role and current_user.role.name == "admin" %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Régénérer le token API</h5>
+            
+            <p class="text-muted">
+                Cette action va générer un nouveau token pour l’appareil. L’ancien token ne fonctionnera plus.
+            </p>
+
+            <form
+                method="post"
+                action="{{ request.url_for('devices.regenerate_token', device_id=device.id) }}"
+                onsubmit="return confirm('Voulez-vous vraiment régénérer le token ?');"
+            >
+                <button type="submit" class="btn btn-outline-danger">Régénérer le token</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
