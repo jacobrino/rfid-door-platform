@@ -22,7 +22,7 @@ LCD_I2C lcd(0x27,20,4);
 
 // ======== API ========
 const char* API_URL = "https://rfid-door-platform.onrender.com/api/esp32/access/check";
-const char* BEARER_TOKEN = "q34y0ylyq4Ad3viJQRtYPmjjRmVyrI9OA45E3q1mLhU";
+const char* BEARER_TOKEN = "Fmf-hAOrQSw7ksI3FtXYSIQYBdZvEYqpknjdRMbKt60";
 
 // ======== BUZZER ========
 #define BUZZER_PIN 13
@@ -150,6 +150,10 @@ String readUID() {
   String uid = "";
 
   for (byte i = 0; i < rfid.uid.size; i++) {
+    if (rfid.uid.uidByte[i] < 0x10) {
+      uid += "0";
+    }
+
     uid += String(rfid.uid.uidByte[i], HEX);
   }
 
