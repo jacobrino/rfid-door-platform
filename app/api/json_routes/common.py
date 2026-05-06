@@ -7,7 +7,7 @@ from app.models.rfid_assignment import RfidAssignment
 from app.models.device import Device
 from app.models.access_log import AccessLog
 from app.models.staff_user import StaffUser
-
+from app.utils.date_utils import to_local_isoformat,to_local_display
 
 def authorized_user_out(u: AuthorizedUser, request: Request | None = None) -> dict:
     photo_url = None
@@ -79,6 +79,7 @@ def device_out(d: Device) -> dict:
     }
 
 
+
 def assignment_out(a: RfidAssignment, request: Request | None = None) -> dict:
     return {
         "id": a.id,
@@ -108,7 +109,7 @@ def access_log_out(log: AccessLog, request: Request | None = None) -> dict:
         "access_status": log.access_status,
         "access_direction": log.access_direction,
         "reason": log.reason,
-        "scanned_at": log.scanned_at.isoformat() if log.scanned_at else None,
+        "scanned_at": to_local_isoformat(log.scanned_at) if log.scanned_at else None,
         "door_opened": log.door_opened,
         "created_at": log.created_at.isoformat() if log.created_at else None,
         "device": device_out(log.device) if log.device else None,

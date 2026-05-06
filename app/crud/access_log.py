@@ -6,7 +6,7 @@ from app.models.access_log import AccessLog
 from app.models.authorized_user import AuthorizedUser
 from app.models.device import Device
 from app.schemas.access_log import AccessLogCreate
-
+from app.utils.date_utils import utc_now
 
 def get_access_logs(db: Session) -> list[AccessLog]:
     return (
@@ -117,7 +117,11 @@ def create_access_log(
     data = payload.model_dump()
 
     if data.get("scanned_at") is None:
-        data["scanned_at"] = datetime.utcnow()
+        # data["scanned_at"] = datetime.utcnow()
+        # data["scanned_at"] = datetime.now(timezone.utc)
+        data["scanned_at"] = utc_now()
+
+
 
     access_log = AccessLog(**data)
     db.add(access_log)
