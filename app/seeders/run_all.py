@@ -16,12 +16,12 @@ def main():
         seed_roles(db)
         seed_admin(db)
         seed_agent(db)
-        seed_staff_users(db, total=30)
-        seed_authorized_users(db, total=20)
-        seed_rfid_cards(db, total=20)
-        seed_devices(db, total=20)
-        seed_assignments(db, total=20)
-        seed_access_logs(db, total=20)
+        # seed_staff_users(db, total=30)
+        # seed_authorized_users(db, total=20)
+        # seed_rfid_cards(db, total=20)
+        # seed_devices(db, total=20)
+        # seed_assignments(db, total=20)
+        # seed_access_logs(db, total=20)
 
         print("All seeders executed successfully.")
     except Exception as e:
